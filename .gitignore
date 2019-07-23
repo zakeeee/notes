@@ -1,0 +1,8 @@
+# Recycle Bin
+_v_recycle_bin/
+
+# Configuration File
+_vnote.json
+
+# Temp Files
+*.vswp
