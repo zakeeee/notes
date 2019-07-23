@@ -1,0 +1,19 @@
+{
+    "attachment_folder": "_v_attachments",
+    "created_time": "2019-07-23T13:36:10Z",
+    "files": [
+    ],
+    "image_folder": "",
+    "recycle_bin_folder": "_v_recycle_bin",
+    "sub_directories": [
+        {
+            "name": "数据库"
+        },
+        {
+            "name": "剑指Offer题目"
+        }
+    ],
+    "tags": [
+    ],
+    "version": "1"
+}
