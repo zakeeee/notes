@@ -6,6 +6,7 @@
 - ==与equals()
 - hashCode()与equals()
 - String、StringBuffer、StringBuilder区别
+- 序列化
 
 ## Java里面只有值传递
 
@@ -47,3 +48,6 @@ String str = "123" + "456";
 ```
 
 那么JVM会优化为一个String对象，即"123456"，这种情况下String速度最快。
+
+## 序列化
+
