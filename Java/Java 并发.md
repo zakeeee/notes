@@ -7,6 +7,7 @@
 - synchronized和Lock的区别
 - ReentrantLock实现原理
 - notify 和 notifyAll 的区别
+- start 和 run 的区别
 
 ## 锁的类型
 
@@ -45,9 +46,13 @@
 
 ## notify 和 notifyAll 的区别
 
-当线程调用一个共享变量的wait后，该调用线程被挂起，进入等待池。
+当线程调用一个共享对象的wait后，该调用线程被挂起，进入等待池。
 
 notify 随机唤醒一个等待池中的线程到锁池中。
 notifyAll 唤醒所有等待池中的线程到锁池中。
 
 **notify 可能导致死锁。**
+
+## start 和 run 的区别
+
+调用 `thread.start()` 后会在新的线程中执行 `run()` 方法，不会阻塞当前线程。而直接调用 `run()` 则是在当前调用线程中执行，可能会阻塞当前线程。
