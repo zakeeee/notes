@@ -112,8 +112,8 @@ obj = null;
 
 ## 垃圾回收
 
-JVM 垃圾回收
+[JVM 垃圾回收.md](JVM%20垃圾回收.md)
 
 ## 类加载
 
-JVM 类加载
+[JVM 类加载.md](JVM%20类加载.md)
