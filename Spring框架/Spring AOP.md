@@ -29,3 +29,5 @@ Spring 中对应了 5 种不同类型的通知：
 ### Aspect 切面
 
 切面包含了通知和切点，通知和切点共同定义了切面是什么，在何时，何处执行切面逻辑。
+
+参考：[Spring AOP源码解析](https://www.javadoop.com/post/spring-aop-source?hmsr=toutiao.io&utm_medium=toutiao.io&utm_source=toutiao.io)

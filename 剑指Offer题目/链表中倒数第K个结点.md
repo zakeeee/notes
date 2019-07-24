@@ -1,0 +1,72 @@
+# 14.链表中倒数第K个结点
+
+**题目描述**
+
+输入一个链表，输出该链表中倒数第k个结点。
+
+**解答**
+
+1. 利用一个栈。
+
+```java
+/*
+public class ListNode {
+    int val;
+    ListNode next = null;
+
+    ListNode(int val) {
+        this.val = val;
+    }
+}*/
+import java.util.LinkedList;
+
+public class Solution {
+    public ListNode FindKthToTail(ListNode head,int k) {
+        LinkedList<ListNode> stack = new LinkedList<>();
+        while (head != null) {
+            stack.push(head);
+            head = head.next;
+        }
+        if (k > stack.size()) {
+            return null;
+        }
+        ListNode ret = null;
+        while (k-- > 0) {
+            ret = stack.pop();
+        }
+        return ret;
+    }
+}
+```
+
+2. 双指针法，两个指针刚开始都指向head，然后t2向后走k步，如果k步没减到0，t2就为null了，说明链表长度小于k，就返回null。如果走完后t2不为null，就让两个指针同时向后走，走到t2为null，则t1指向倒数第k个。
+
+```java
+/*
+public class ListNode {
+    int val;
+    ListNode next = null;
+
+    ListNode(int val) {
+        this.val = val;
+    }
+}*/
+public class Solution {
+    public ListNode FindKthToTail(ListNode head,int k) {
+        ListNode t1 = head;
+        ListNode t2 = head;
+        int kk = k;
+        while (kk-- > 0) {
+            if (t2 == null) {
+                return null;
+            }
+            t2 = t2.next;
+        }
+        while (t2 != null) {
+            t1 = t1.next;
+            t2 = t2.next;
+        }
+        return t1;
+    }
+}
+```

@@ -24,6 +24,8 @@
 
 ![](_v_images/20190723214902806_6614.png)
 
+[搞懂Redis到底快在哪里](https://mp.weixin.qq.com/s?__biz=MjM5NTY1MjY0MQ==&mid=2650745383&idx=3&sn=c7546a9ad8d23a51505f332d428fec34&chksm=befebf698989367ffff100dcde67785d1fbeceff4c814fba2a93443c967d39775b58cd78c92f&mpshare=1&scene=1&srcid=#rd)
+
 ## Redis 数据结构模型
 
 ### 1. String
