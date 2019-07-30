@@ -12,6 +12,9 @@
 
 ## TCP和UDP报文结构
 
+- TCP：传输控制协议（Transmission Control Protocol）
+- UDP：用户数据报协议（User Datagram Protocol）
+
 ### TCP报文
 
 ![](_v_images/20190724091120161_25752.png)
