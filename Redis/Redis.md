@@ -25,7 +25,12 @@
 4. 单线程：第一，单线程简化算法的实现，并发的数据结构实现不但困难且测试也麻烦。第二，单线程避免了线程切换以及加锁释放锁带来的消耗，对于服务端开发来说，锁和线程切换通常是性能杀手。这里的单线程只是处理请求是单线程，而不是整个Redis进程只有一个线程。
 5. 非阻塞多路IO复用：Redis使用epoll（Linux中）作为IO多路复用技术的实现，再加上Redis自身的事件处理模型将epoll的read、write、close等都转换成事件，不在网络I/O上浪费过多的时间。实现对多个文件描述符FD读写的监控，提高性能。
 
-![](_v_images/20190723214902806_6614.png)
+**Redis 采用的 I/O 多路复用函数：epoll/kqueue/evport/select？**
+
+- 因地制宜，根据操作系统的不同选择不同的多路复用函数。
+- 优先选择时间复杂度为 O(1) 的 I/O 多路复用函数作为底层实现。
+- 以时间复杂度 O(n) 的 select 作为保底。
+- 基于 react 设计模式监听 I/O 事件。
 
 [搞懂Redis到底快在哪里](https://mp.weixin.qq.com/s?__biz=MjM5NTY1MjY0MQ==&mid=2650745383&idx=3&sn=c7546a9ad8d23a51505f332d428fec34&chksm=befebf698989367ffff100dcde67785d1fbeceff4c814fba2a93443c967d39775b58cd78c92f&mpshare=1&scene=1&srcid=#rd)
 
