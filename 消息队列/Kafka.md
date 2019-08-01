@@ -39,6 +39,81 @@ Kafka 采用 pull 模式来消费消息，这样的好处是消费者可以根�
 
 Kafka 由消费者自己来控制 offset，消费者可以在本地保存最后消费的 offset，并定期向 zookeeper 注册 offset。
 
+## 底层存储
+
+每个分片在文件系统中是一个目录，每个分片由几个部分组成。
+
+### 1. segment 分段
+
+比如 test0-0 目录，保存了 partition0 的日志，这里面的日志文件也不只是一个，而是被切断成了多个段，每段叫做一个 segment，每个 segment 其实包含了两个文件，一个 log 文件，记录消息，另一个是 index 文件，这是 log 文件的索引文件，这两个文件总是成对出现的。这种分段的方式便于消费者快速的查询到想要定位的消息。
+
+### 2. offset 偏移量
+
+Kafka 用 offset 来区别每条不同的消息，offset 是有序的数字，相当于消息的 id，长度 20 位，不够 20 位的补 0。比如第一条消息的 offset 就是 00000000000000000001。
+
+### 3. 日志文件
+
+每个 segment 的 log 文件和 index 文件，都以上一个 segment 最后一条消息的 offset 来命名。也就是说，该 partition 的第一段，log 文件和 index 文件的名字分别是 `00000000000000000000.log` 和 `00000000000000000000.index`，log 文件里的第一条日志的 offset 就会是 00000000000000000001。假设第一段里面存了 1000 条消息然后分段了（分段的方式是可以配置的），那么第二段的文件名就是 `00000000000000001000.log` 和 `00000000000000001000.index`，log 文件里的第一条消息的 offset 将是 00000000000000001001。
+
+### 4. log 文件的存储格式
+
+log 文件定义了严格的存储格式，以便快速查询消息。
+
+每条消息的内容由以下部分组成：
+
+|         关键字         |                                   解释                                    |
+| :-------------------: | :-----------------------------------------------------------------------: |
+|     8 byte offset     | 这是该条消息在 partition 中的绝对 offset。能表示这是 partition 的第多少条消息 |
+|    4 byte message     |                               message 大小                                |
+|     4 byte CRC32      |                           用 CRC32 校验 message                           |
+|    1 byte "magic"     |                    表示本次发布 Kafka 服务程序协议版本号                    |
+|  1 byte "attributes"  |                  表示为独立版本、或标识压缩类型、或编码类型                  |
+|   4 byte key length   |            表示 key 的长度，当 key 为 -1 时，K byte key 字段不填            |
+|      K byte key       |                                   可选                                    |
+| 4 byte payload length |                              实际消息数据长度                              |
+|  value bytes payload  |                                实际消息数据                                |
+
+### 5. index 文件的存储方式
+
+index 文件是二进制存储的，里面的每条索引都记录了消息的相对 offset 和在文件中的物理位置。这里的相对 offset 和 log 文件里的绝对 offset 不同，相对 offset 是每个 segment 都从 1 开始的，而绝对 offset 在整个 partition 中都是唯一的。
+
+假设第一个 segment 记录了 1000 条消息，第二段 segment 记录了 1234 条消息，那么第二段 segment 的 log 文件里大概是这样的（后面的数字是消息在 partition 绝对 offset，实际上 log 文件有自己的存储格式）：
+
+```
+Message1001
+Message1002
+Message1003
+Message1004
+Message1005
+Message1006
+....
+Message2234
+```
+
+那么index文件里的内容可能是这样的：
+
+```
+1,0  // 代表 segment 的第一条消息，也就是 Message1001，在 segment 最开头的位置
+3,22  // 代表 segment 的第三条消息，也就是 Message1003，从第 22 个偏移量开始
+6,45
+10,77
+...
+1230,8765  // 代表 segment 的第 1230 条消息，也就是 Message2230，从第 8765 个偏移量开始
+```
+
+每行的第一个数代表某条消息在此 segment 的相对 offset，第二个数代表这条消息在 log 文件中的文件指针偏移量（单位还没搞明白，好像是byte）。
+
+可以看到，index文件没有记录每一条消息的偏移量，而是采用**稀疏索引**的方式，隔几条记录一次，这样使得索引文件的变的比较小，但是在查询时要付出一点的性能损失。
+
+只要消费者从 index 文件定位了消息的位置，就能快速的从 log 文件里找到这条消息。
+
+### 6. 分段的策略
+
+segment 分段有两种方式，按大小和按文件生成时间。
+
+- 按大小：server.properties 中的 `log.segment.bytes` 定义了每段的 log 文件的大小上限，如果超出该上限则后面的消息会创建新文件来存储。该配置项默认值是 `1014*1024*1024`。该配置可以在创建 topic 时额外指定，不使用配置文件的配置项。
+- 按生成时间：server.properties 中的 `log.roll.hours` 定义了按创建时间分组的方式。如果一个 log 文件创建时间达到了该配置中的小时数，即使文件大小没有达到 `log.segment.bytes`，后面的消息也会创建新文件。该配置可以在创建 topic 时额外指定，不使用配置文件的配置项。
+
 ## 消息传输担保机制
 
 Kafka 有三种消息传输担保机制，默认保证消息收发层面上
@@ -55,3 +130,24 @@ Kafka 将每个分片数据复制到多个服务器上，任何一个分片有�
 
 当 leader 失效时，需在 followers 中选取出新的 leader，可能此时 follower 落后于 leader，因此需要选择一个 **up-to-date** 的 follower。选择 follower 时需要兼顾一个问题，就是新 leader 上所已经承载的 partition leader 的个数，如果一个服务器上有过多的 partition leader，意味着此服务器将承受着更多的 IO 压力。在选举新 leader 时，需要考虑到**负载均衡**。
 
+## 集群 partitions/replicas 默认分配
+
+以一个 Kafka 集群中 4 个 broker 举例，创建 1 个 topic 包含 4 个 partition，2 个 replication。数据流动如图所示
+
+![](_v_images/20190801105209265_14512.png)
+
+当集群中新增 2 节点，partition 增加到 6 个时分布情况如下
+
+![](_v_images/20190801105224503_21439.png)
+
+### 副本分配逻辑规则
+
+- 在 Kafka 集群中，每个 broker 都有均等分配 partition 的 leader 机会。
+- 上述图 broker 的 partition 中，箭头指向为副本，以 partition-0 为例：broker1 中 parition-0 为 leader，broker2 中 partition-0 为副本。
+- 上述图中每个 broker（按照 brokerId 有序）依次分配主 partition，下一个 broker 为副本，如此循环迭代分配，多副本都遵循此规则。
+
+### 副本分配算法
+
+- 将所有 n 个 broker 和待分配的 m 个 partition 排序。
+- 将第 i 个 partition 分配到第 `i mod n` 个 broker 上。
+- 将第 i 个 partition 的第 j 个副本分配到第 `(i + j) mod n` 个 broker 上。
