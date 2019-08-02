@@ -12,4 +12,4 @@
 5. 浏览器解析渲染页面
 6. 连接结束
 
-具体可以参考这篇文章：https://segmentfault.com/a/1190000006879700
+[参考文章](https://segmentfault.com/a/1190000006879700)
