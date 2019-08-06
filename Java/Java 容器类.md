@@ -18,6 +18,14 @@ Vector所有方法都是同步的，是线程安全的，但是如果不需要�
 HashMap是非线程安全的，键值可以为null。
 HashTable是线程安全的，键值不能为null，HashTable现在已经被淘汰了，如果要保证线程安全应该用ConcurrentHashMap。
 
+## HashMap 扩容
+
+时机：当 size 超过阈值（threshold = loadFactor * capacity）且插入的元素出现哈希冲突。
+
+容量扩展为原来的两倍，并把所有元素进行重新映射。
+
+HashMap 插入时是采用头插法，JDK 1.8 之后是插入尾部，并且一个桶中元素大于 8 时转为红黑树。
+
 ## ConcurrentHashMap 和 Hashtable 的区别
 
 ConcurrentHashMap 和 Hashtable 的区别主要体现在实现线程安全的方式上不同。
