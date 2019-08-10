@@ -1,11 +1,5 @@
 # Java 容器类
 
-要点：
-
-- ArrayList与Vector的区别
-- HashMap和HashTable的区别
-- ConcurrentHashMap 和 Hashtable 的区别
-
 ## ArrayList与Vector的区别
 
 ArrayList和Vector底层都是用数组来实现的。

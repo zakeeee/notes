@@ -1,14 +1,5 @@
 # HTTP
 
-要点：
-
-- URI
-- 报文格式
-- HTTP请求方法
-- HTTP状态码
-- HTTP 1.1
-- HTTP 2.0
-
 ## URI
 
 URI 包含 URL 和 URN。

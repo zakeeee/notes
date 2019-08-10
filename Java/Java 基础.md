@@ -1,14 +1,5 @@
 # Java 基础
 
-要点：
-
-- Java里面只有值传递
-- ==与equals()
-- hashCode()与equals()
-- String、StringBuffer、StringBuilder区别
-- 序列化
-- Java 实现多态的方式
-
 ## Java里面只有值传递
 
 Java里面只有值传递，调用方法传入引用时，其实引用也会被拷贝。

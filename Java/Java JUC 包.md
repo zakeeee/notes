@@ -1,15 +1,5 @@
 # Java JUC 包
 
-要点：
-
-- AQS
-- CountDownLatch
-- CyclicBarrier
-- Semaphore
-- FutureTask
-- Blocking Queue
-- ForkJoin
-
 ## AQS
 
 AQS（Abstract Queued Synchronizer，队列同步器）是构建锁或者其他同步组件的基础框架（如 ReentrantLock、ReentrantReadWriteLock、Semaphore 等），是 JUC 并发包中的核心基础组件。

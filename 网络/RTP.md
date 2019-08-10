@@ -1,11 +1,6 @@
 # RTP
 
-要点：
-
-- RTP
-- RTCP
-
-## RTP
+## 实时传输协议 RTP
 
 [RTP](https://zh.wikipedia.org/wiki/实时传输协议)
 
@@ -15,6 +10,6 @@
 
 [参考](https://github.com/babosa/Course/blob/master/流媒体传输控制协议(RTSP%20RTP%20SDP)详解/rtp.md)
 
-## RTCP
+## 实时传输控制协议 RTCP
 
 [RTCP](https://zh.wikipedia.org/wiki/实时传输控制协议)
