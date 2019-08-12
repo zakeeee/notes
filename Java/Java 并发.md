@@ -272,11 +272,42 @@ ThreadLocal<String> tl1 = new ThreadLocal<>();
 // 线程中调用时
 tl1.set("123");
 
-// 这时这个线程中 threadLocals 的情况
-{
-  tl1: "123"
+// 这时这个线程中 threadLocals 的情况：
+// {
+//   tl1: "123"
+// }
+```
+
+ThreadLocal 的 set 和 get 方法源码如下
+
+```java
+public void set(T value) {
+    Thread t = Thread.currentThread();
+    ThreadLocalMap map = getMap(t);  // 获取当前线程的 ThreadLocalMap
+    if (map != null)
+        map.set(this, value);
+    else
+        createMap(t, value);
+}
+
+public T get() {
+    Thread t = Thread.currentThread();
+    ThreadLocalMap map = getMap(t);
+    if (map != null) {
+        ThreadLocalMap.Entry e = map.getEntry(this);
+        if (e != null) {
+            @SuppressWarnings("unchecked")
+            T result = (T)e.value;
+            return result;
+        }
+    }
+    return setInitialValue();
 }
 ```
+
+ThreadLocal 从理论上讲并不是用来解决多线程并发问题的，因为根本不存在多线程竞争，每个线程都有一份自己的数据。
+
+在一些场景 (尤其是使用线程池) 下，由于 ThreadLocal.ThreadLocalMap 的底层数据结构导致 ThreadLocal 有内存泄漏的情况，应该尽可能在每次使用 ThreadLocal 后手动调用 `remove()`，以避免出现 ThreadLocal 经典的内存泄漏甚至是造成自身业务混乱的风险。
 
 ThreadLocal 不具有继承性，如果一个线程中再创建一个子线程，那么这个子线程是无法获取到父线程的 threadLocals 里面的值的。为了解决这个问题就有了 InheritableThreadLocal 类。
 
