@@ -70,9 +70,9 @@ public static void main(String[] args) {
 }
 ```
 
-#### Thread 类的 start() 和 run() 的区别
+**Thread 类的 start() 和 run() 的区别**
 
-调用 `thread.start()` 后，调度器会在新的线程中执行 `run()` 方法，不会阻塞当前线程。而直接调用 `run()` 则是在当前调用线程中执行，可能会阻塞当前线程。
+调用 `thread.start()` 后，调度器会在新的线程中执行 `run()` 方法，不会阻塞当前线程。而直接调用 `run()` 则是普通方法调用，在当前调用线程中执行，可能会阻塞当前线程。
 
 ### 实现 Runnable 接口
 
@@ -124,35 +124,6 @@ public static void main(String[] args) throws ExecutionException, InterruptedExc
 
 ## 基础线程机制
 
-### 线程池 Executor
-
-线程池 Executor 管理多个异步任务的执行，而无需开发者显式管理线程的生命周期。
-
-Java 里有三种 Executor：
-
-- CachedThreadPool：一个任务创建一个线程，初始线程数为 0，最大线程数为 `Integer.MAX_VALUE`，阻塞队列为同步队列，存活时间 60s。加入同步队列的任务会被马上执行，同步队列里最多只有一个任务。
-- FixedThreadPool：所有任务只能使用固定大小的线程，阻塞队列长度为 `Integer.MAX_VALUE`，存活时间 0s，只要线程个数比核心线程数多且空闲则回收。
-- SingleThreadExecutor：相当于大小为 1 的 FixedThreadPool。
-
-```java
-public static void main(String[] args) {
-    ExecutorService executorService = Executors.newCachedThreadPool();
-    for (int i = 0; i < 5; i++) {
-        executorService.execute(new MyRunnable());
-    }
-    executorService.shutdown();
-}
-```
-
-#### 线程池关键参数
-
-- corePoolSize：核心线程个数，即创建线程池时拥有的线程数量。
-- maximumPoolSize：最大线程个数，即线程池里的线程最多可以增加到多少个。
-- workQueue：任务队列，保存等待执行的任务的阻塞队列。线程池里的线程会去任务队列里获取任务并执行。
-- keepAliveTime：超过核心线程个数的闲置的线程的存活时间，超过这个时间的会被回收。
-- ThreadFactory：创建线程的工厂类。
-- RejectedExecutionHandler：线程达到最大线程数，且任务队列满了之后的拒绝策略。
-
 ### 守护线程 Daemon
 
 当所有非守护线程（用户线程）结束时，程序也就终止，不管是否存在守护线程。主线程属于非守护线程。
@@ -182,13 +153,46 @@ public void run() {
 
 ### 让出 yield
 
-调用 `Thread.yield()` 暗示线程调度器当前线程请求让出 CPU 时间片，可以切换给其它线程来执行。该方法只是对线程调度器的一个建议，而且也只是建议具有相同优先级的其它线程可以运行，调度器也可以忽视。如果请求成功，会进入就绪态。
+调用 `Thread.yield()` 告诉线程调度器当前线程请求让出 CPU 时间片，可以切换给其它线程来执行。该方法只是对线程调度器的一个建议，而且也只是建议具有相同优先级的其它线程可以运行，调度器也可以忽视。如果请求成功，当前线程会进入就绪态。
 
 ```java
 public void run() {
     Thread.yield();
 }
 ```
+
+## 线程池 Executor
+
+使用线程池主要有两个好处：
+
+1. 当执行大量异步任务时线程池能提供较好的性能。这是因为线程池里面的线程是可以复用的，减少了频繁创建和销毁线程的开销。
+2. 线程池提供了一种资源限制和管理的手段，比如可以限制线程数量，动态增减线程等。
+
+Java 里有三种类型的线程池：
+
+- CachedThreadPool：一个任务创建一个线程，初始线程数为 0，最大线程数为 `Integer.MAX_VALUE`，阻塞队列为同步队列，存活时间 60s。加入同步队列的任务会被马上执行，同步队列里最多只有一个任务。
+- FixedThreadPool：所有任务只能使用固定大小的线程，阻塞队列长度为 `Integer.MAX_VALUE`，存活时间 0s，只要线程个数比核心线程数多且空闲则回收。
+- SingleThreadExecutor：相当于大小为 1 的 FixedThreadPool。
+
+```java
+public static void main(String[] args) {
+    ExecutorService executorService = Executors.newCachedThreadPool();
+    for (int i = 0; i < 5; i++) {
+        executorService.execute(new MyRunnable());
+    }
+    executorService.shutdown();
+}
+```
+
+### 线程池关键参数
+
+- corePoolSize：核心线程个数，即线程池创建时其中的线程数量，也是一个线程池中至少拥有的线程数量。
+- maximumPoolSize：最大线程个数，即线程池里的线程最多可以增加到的数量。
+- workQueue：任务队列，保存等待执行的任务的阻塞队列。线程池里的线程会去任务队列里获取任务并执行。
+- keepAliveTime：超过核心线程个数的闲置线程的存活时间，超过这个时间的闲置线程会被回收。
+- TimeUnit：存活时间的时间单位。
+- ThreadFactory：创建线程的工厂类。
+- RejectedExecutionHandler：线程达到最大线程数，且任务队列满了之后的拒绝策略。
 
 ## 中断
 
@@ -326,7 +330,7 @@ public class LockExample {
 }
 ```
 
-#### ReentrantLock实现原理
+**ReentrantLock 实现原理**
 
 重入意味着获取锁的粒度是线程。要想支持重入性，就要解决两个问题：
 
@@ -366,11 +370,11 @@ synchronized 中的锁是非公平的，ReentrantLock 默认情况下也是非�
 
 ### 锁的类型
 
-- 乐观锁与悲观锁：乐观锁总是假定别的线程不会修改，只是提交操作时检查数据是否被修改过；悲观锁相反，总是假定别人会修改，因此每次提交操作前都要上锁。
-- 公平锁与非公平锁：公平锁按照线程等待锁的时间来调整获取锁的优先级，等待时间越长的线程优先级越高，正因为如此，公平锁需要频繁切换线程，性能开销大；非公平锁相反，可以减少线程频繁切换，提高吞吐量，但非公平锁会存在“线程饥饿”的问题，可能某个线程很长时间都拿不到锁，一直等待。
-- 独占锁与共享锁：独占锁只能被一个线程占有，其他线程想要获取需要阻塞，比如写锁；共享锁允许同时有多个线程占有，比如读锁。
-- 可重入锁：已经获得该锁的线程可以再次获得该锁，可重入锁内部使用一个线程标识和一个计数器实现。
-- 自旋锁：当一个线程发现锁被别的线程占用时，不马上阻塞自己，在不放弃 CPU 使用权的情况下，多次尝试获取（自旋），可能在尝试过程中其他线程就释放了锁，该线程可能就获得了锁，如果多次尝试都没获得锁，才进入阻塞状态。自旋锁使用 CPU 时间来换取线程切换的开销。
+- 乐观锁与悲观锁：**乐观锁**总是假定别的线程不会修改，只是提交操作时检查数据是否被修改过；**悲观锁**相反，总是假定别人会修改，因此每次提交操作前都要上锁。
+- 公平锁与非公平锁：**公平锁**按照线程等待锁的时间来调整获取锁的优先级，等待时间越长的线程优先级越高，正因为如此，公平锁需要频繁切换线程，性能开销大；**非公平锁**相反，可以减少线程频繁切换，提高吞吐量，但非公平锁会存在“线程饥饿”的问题，可能某个线程很长时间都拿不到锁，一直等待。
+- 独占锁与共享锁：**独占锁**只能被一个线程占有，其他线程想要获取需要阻塞，比如写锁；**共享锁**允许同时有多个线程占有，比如读锁。
+- 可重入锁：已经获得该锁的线程可以再次获得该锁，**可重入锁**内部使用一个线程标识和一个计数器实现。
+- 自旋锁：当一个线程发现**自旋锁**被别的线程占用时，不马上阻塞自己，在不放弃 CPU 使用权的情况下，多次尝试获取（自旋），可能在尝试过程中其他线程就释放了锁，该线程可能就获得了锁，如果多次尝试都没获得锁，才进入阻塞状态。自旋锁使用 CPU 时间来换取线程切换的开销。
 
 ## ThreadLocal
 
@@ -472,7 +476,7 @@ java.util.concurrent 类库中提供了 Condition 类来实现线程之间的协
 
 ## JUC 包
 
-[Java JUC 包.md](Java%20JUC%20包.md)
+[Java 并发-JUC](Java%20并发-JUC.md)
 
 ## 多线程开发良好的实践
 
