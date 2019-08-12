@@ -10,6 +10,16 @@
             "name": "代理模式.md",
             "tags": [
             ]
+        },
+        {
+            "attachment_folder": "",
+            "attachments": [
+            ],
+            "created_time": "2019-08-12T08:30:57Z",
+            "modified_time": "2019-08-12T08:37:01Z",
+            "name": "单例模式.md",
+            "tags": [
+            ]
         }
     ],
     "sub_directories": [

@@ -1,5 +1,7 @@
 # RocketMQ
 
+[TOC]
+
 ## 消息模型
 
 RocketMQ 使用的是标准的发布-订阅模型。

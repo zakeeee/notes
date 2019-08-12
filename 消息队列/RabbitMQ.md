@@ -1,5 +1,7 @@
 # RabbitMQ
 
+[TOC]
+
 ## 消息模型
 
 RabbitMQ 采用多个队列加 Exchange 的方式，生产者将消息发给 Exchange，Exchange 根据配置分发给相应的队列。

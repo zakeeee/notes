@@ -1,5 +1,7 @@
 # Java 容器类
 
+[TOC]
+
 ## ArrayList与Vector的区别
 
 ArrayList和Vector底层都是用数组来实现的。

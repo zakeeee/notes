@@ -166,7 +166,7 @@ public static void main(String[] args) {
 
 ### 休眠 sleep
 
-调用 `Thread.sleep(millisec)` 方法会使得线程进入限期等待状态，并且不会释放已经占有的资源。
+调用 `Thread.sleep(millisec)` 方法会使得线程进入限期等待状态，并且**不会释放已经占有的锁**。
 
 当其他线程使用 `interrupt()` 中断处于休眠状态的线程时，休眠状态的线程会抛出 InterruptedException，因为异常不能跨线程传播回主线程中，因此必须在本地进行处理。线程中抛出的其它异常也同样需要在本地进行处理。
 
@@ -413,33 +413,24 @@ synchronized 中的锁是非公平的，ReentrantLock 默认情况下也是非�
 
 ## 线程之间的协作
 
-### join()
+### thread.join
 
 在线程中调用另一个线程的 `join()` 方法，会将当前线程挂起，而不是忙等待，直到目标线程结束。
 
-### wait(), notify(), notifyAll()
+### obj.wait, obj.notify, obj.notifyAll
 
-调用 `wait()` 使得线程等待某个条件满足，线程在等待时会被挂起，当其他线程的运行使得这个条件满足时，其它线程会调用 `notify()` 或者 `notifyAll()` 来唤醒挂起的线程。
+调用 `wait()` 使得线程等待某个条件满足，线程在等待时会被挂起，其它线程可以调用 `notify()` 或者 `notifyAll()` 来唤醒挂起的线程。
 
-它们都属于 Object 的一部分，而不属于 Thread。
+`notify()` 随机唤醒一个正在等待的线程，`notifyAll()` 唤醒所有正在等待的线程。`notify()` 和 `notifyAll()` 都只能唤醒在此之前处于等待状态的线程。此外被唤醒的线程不能马上从 `wait()` 方法返回并继续执行，它必须在获取了共享对象的监视器锁后才可以返回。
 
 只能用在同步方法或者同步控制块中使用，否则会在运行时抛出 IllegalMonitorStateException。
 
-使用 `wait()` 挂起期间，线程会释放锁。这是因为，如果没有释放锁，那么其它线程就无法进入对象的同步方法或者同步控制块中，那么就无法执行 `notify()` 或者 `notifyAll()` 来唤醒挂起的线程，造成死锁。
+使用 `wait()` 挂起期间，**线程会释放锁**。这是因为，如果没有释放锁，那么其它线程就无法进入对象的同步方法或者同步控制块中，那么就无法执行 `notify()` 或者 `notifyAll()` 来唤醒挂起的线程，造成死锁。
 
-#### notify() 和 notifyAll() 的区别
+#### wait 和 sleep 的区别
 
-当线程调用一个共享对象的wait后，该调用线程被挂起，进入等待池。
-
-- notify() 随机唤醒一个等待池中的线程到锁池中。
-- notifyAll() 唤醒所有等待池中的线程到锁池中。
-
-**notify 可能导致死锁。**
-
-#### wait() 和 sleep() 的区别
-
-- wait() 是 Object 的方法，而 sleep() 是 Thread 的静态方法；
-- wait() 会释放锁，sleep() 不会。
+- `wait()` 是 Object 的方法，而 `sleep()` 是 Thread 的静态方法。
+- `wait()` 会释放锁，`sleep()` 不会。
 
 ### await(), signal(), signalAll()
 
@@ -457,7 +448,7 @@ java.util.concurrent 类库中提供了 Condition 类来实现线程之间的协
 
 - 给线程起个有意义的名字，这样可以方便找 Bug。
 - 缩小同步范围，从而减少锁争用。例如对于 synchronized，应该尽量使用同步块而不是同步方法。
-- 多用同步工具少用 wait() 和 notify()。首先，CountDownLatch, CyclicBarrier, Semaphore 和 Exchanger 这些同步类简化了编码操作，而用 wait() 和 notify() 很难实现复杂控制流；其次，这些同步类是由最好的企业编写和维护，在后续的 JDK 中还会不断优化和完善。
+- 多用同步工具少用 `wait()` 和 `notify()`。首先，CountDownLatch, CyclicBarrier, Semaphore 和 Exchanger 这些同步类简化了编码操作，而用 `wait()` 和 `notify()` 很难实现复杂控制流；其次，这些同步类是由最好的企业编写和维护，在后续的 JDK 中还会不断优化和完善。
 - 使用 BlockingQueue 实现生产者消费者问题。
 - 多用并发集合少用同步集合，例如应该使用 ConcurrentHashMap 而不是 Hashtable。
 - 使用本地变量和不可变类来保证线程安全。

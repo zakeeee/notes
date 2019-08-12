@@ -1,5 +1,7 @@
 # B树与B+树
 
+[TOC]
+
 ## B树
 
 [B树](https://zh.wikipedia.org/wiki/B树)
