@@ -255,75 +255,6 @@ Future<?> future = executorService.submit(() -> {
 future.cancel(true);
 ```
 
-## ThreadLocal
-
-ThreadLocal 提供了线程本地变量，如果创建了一个 ThreadLocal 变量，那么访问这个变量的每个线程都会获得这个变量的一个本地副本。
-
-### ThreadLocal 实现原理
-
-每个线程中都有两个 ThreadLocalMap 的成员变量，分别为 threadLocals 和 inheritableThreadLocal。默认情况下这两个变量都为 null，在该线程中第一次调用 ThreadLocal 的 get 或 set 方法时才会创建他们。其实每个线程的本地变量不是存在 ThreadLocal 实例里，而是存放在各自的 threadLocals 变量中。
-
-ThreadLocalMap 是一种 HashMap，其中的 key 是当前 ThreadLocal 的实例对象的引用，value 是通过 set 方法传递的值。
-
-```java
-// 一个 ThreadLocal 实例对象
-ThreadLocal<String> tl1 = new ThreadLocal<>();
-
-// 线程中调用时
-tl1.set("123");
-
-// 这时这个线程中 threadLocals 的情况：
-// {
-//   tl1: "123"
-// }
-```
-
-ThreadLocal 的 set 和 get 方法源码如下
-
-```java
-public void set(T value) {
-    Thread t = Thread.currentThread();
-    ThreadLocalMap map = getMap(t);  // 获取当前线程的 ThreadLocalMap
-    if (map != null)
-        map.set(this, value);
-    else
-        createMap(t, value);
-}
-
-public T get() {
-    Thread t = Thread.currentThread();
-    ThreadLocalMap map = getMap(t);
-    if (map != null) {
-        ThreadLocalMap.Entry e = map.getEntry(this);
-        if (e != null) {
-            @SuppressWarnings("unchecked")
-            T result = (T)e.value;
-            return result;
-        }
-    }
-    return setInitialValue();
-}
-```
-
-ThreadLocal 从理论上讲并不是用来解决多线程并发问题的，因为根本不存在多线程竞争，每个线程都有一份自己的数据。
-
-在一些场景 (尤其是使用线程池) 下，由于 ThreadLocal.ThreadLocalMap 的底层数据结构导致 ThreadLocal 有内存泄漏的情况，应该尽可能在每次使用 ThreadLocal 后手动调用 `remove()`，以避免出现 ThreadLocal 经典的内存泄漏甚至是造成自身业务混乱的风险。
-
-ThreadLocal 不具有继承性，如果一个线程中再创建一个子线程，那么这个子线程是无法获取到父线程的 threadLocals 里面的值的。为了解决这个问题就有了 InheritableThreadLocal 类。
-
-```java
-// 一个 InheritableThreadLocal 实例对象
-ThreadLocal<String> tl1 = new InheritableThreadLocal<>();
-
-tl1.set("123");
-Thread child = new Thread(new Runnable() {
-    @Override
-    public void run() {
-        System.out.println(tl1.get());  // 输出 "123"
-    }
-});
-```
-
 ## 互斥同步
 
 Java 提供了两种锁机制来控制多个线程对共享资源的互斥访问，第一个是 JVM 实现的 synchronized 关键字，而另一个是 JDK 实现的重入锁 ReentrantLock。
@@ -435,12 +366,80 @@ synchronized 中的锁是非公平的，ReentrantLock 默认情况下也是非�
 
 ### 锁的类型
 
-- 可重入锁：已经获得该锁的对象可以再次获得该锁；
-- 可中断锁：可以在等待获取锁的过程中中断；
-- 公平锁：按照线程等待锁的时间来调整获取锁的优先级，等待时间越长的线程优先级越高，正因为如此，公平锁需要频繁线程切换；**非公平锁**相反，可以减少线程频繁切换，提高吞吐量，但非公平锁会存在“线程饥饿”的问题，可能某个线程很长时间都拿不到锁，一直等待；
-- 读写锁：读和写分开处理的锁，允许多个线程同时读，但是写的时候必须同步；
-- 自旋锁：有的等待获取锁只需要等待很短的时间，这种时候如果频繁切换线程开销较大，因此可以让一个线程反复尝试获得锁，也就是自旋；
-- 乐观锁：总是假定别的线程不会修改，只是提交操作时检查数据是否被修改过；**悲观锁**相反，总是假定别人会修改，因此每次提交操作前都要上锁；
+- 乐观锁与悲观锁：乐观锁总是假定别的线程不会修改，只是提交操作时检查数据是否被修改过；悲观锁相反，总是假定别人会修改，因此每次提交操作前都要上锁。
+- 公平锁与非公平锁：公平锁按照线程等待锁的时间来调整获取锁的优先级，等待时间越长的线程优先级越高，正因为如此，公平锁需要频繁切换线程，性能开销大；非公平锁相反，可以减少线程频繁切换，提高吞吐量，但非公平锁会存在“线程饥饿”的问题，可能某个线程很长时间都拿不到锁，一直等待。
+- 独占锁与共享锁：独占锁只能被一个线程占有，其他线程想要获取需要阻塞，比如写锁；共享锁允许同时有多个线程占有，比如读锁。
+- 可重入锁：已经获得该锁的线程可以再次获得该锁，可重入锁内部使用一个线程标识和一个计数器实现。
+- 自旋锁：当一个线程发现锁被别的线程占用时，不马上阻塞自己，在不放弃 CPU 使用权的情况下，多次尝试获取（自旋），可能在尝试过程中其他线程就释放了锁，该线程可能就获得了锁，如果多次尝试都没获得锁，才进入阻塞状态。自旋锁使用 CPU 时间来换取线程切换的开销。
+
+## ThreadLocal
+
+ThreadLocal 提供了线程本地变量，如果创建了一个 ThreadLocal 变量，那么访问这个变量的每个线程都会获得这个变量的一个本地副本。
+
+### ThreadLocal 实现原理
+
+每个线程中都有两个 ThreadLocalMap 的成员变量，分别为 threadLocals 和 inheritableThreadLocal。默认情况下这两个变量都为 null，在该线程中第一次调用 ThreadLocal 的 get 或 set 方法时才会创建他们。其实每个线程的本地变量不是存在 ThreadLocal 实例里，而是存放在各自的 threadLocals 变量中。
+
+ThreadLocalMap 是一种 HashMap，其中的 key 是当前 ThreadLocal 的实例对象的引用，value 是通过 set 方法传递的值。
+
+```java
+// 一个 ThreadLocal 实例对象
+ThreadLocal<String> tl1 = new ThreadLocal<>();
+
+// 线程中调用时
+tl1.set("123");
+
+// 这时这个线程中 threadLocals 的情况：
+// {
+//   tl1: "123"
+// }
+```
+
+ThreadLocal 的 set 和 get 方法源码如下
+
+```java
+public void set(T value) {
+    Thread t = Thread.currentThread();
+    ThreadLocalMap map = getMap(t);  // 获取当前线程的 ThreadLocalMap
+    if (map != null)
+        map.set(this, value);
+    else
+        createMap(t, value);
+}
+
+public T get() {
+    Thread t = Thread.currentThread();
+    ThreadLocalMap map = getMap(t);
+    if (map != null) {
+        ThreadLocalMap.Entry e = map.getEntry(this);
+        if (e != null) {
+            @SuppressWarnings("unchecked")
+            T result = (T)e.value;
+            return result;
+        }
+    }
+    return setInitialValue();
+}
+```
+
+ThreadLocal 从理论上讲并不是用来解决多线程并发问题的，因为根本不存在多线程竞争，每个线程都有一份自己的数据。
+
+在一些场景 (尤其是使用线程池) 下，由于 ThreadLocal.ThreadLocalMap 的底层数据结构导致 ThreadLocal 有内存泄漏的情况，应该尽可能在每次使用 ThreadLocal 后手动调用 `remove()`，以避免出现 ThreadLocal 经典的内存泄漏甚至是造成自身业务混乱的风险。
+
+ThreadLocal 不具有继承性，如果一个线程中再创建一个子线程，那么这个子线程是无法获取到父线程的 threadLocals 里面的值的。为了解决这个问题就有了 InheritableThreadLocal 类。
+
+```java
+// 一个 InheritableThreadLocal 实例对象
+ThreadLocal<String> tl1 = new InheritableThreadLocal<>();
+
+tl1.set("123");
+Thread child = new Thread(new Runnable() {
+    @Override
+    public void run() {
+        System.out.println(tl1.get());  // 输出 "123"
+    }
+});
+```
 
 ## 线程之间的协作
 
