@@ -34,9 +34,7 @@ JDK1.8 之后：方法区常量池移动到了堆中
 
 ### 强引用
 
-被强引用关联的对象不会被回收
-
-使用 new 创建一个新对象的方式来创建强引用
+使用 new 关键字创建一个新对象的方式来创建强引用。被强引用关联的对象不会被回收，除非引用计数为 0。
 
 ```java
 Object obj = new Object();
@@ -44,9 +42,7 @@ Object obj = new Object();
 
 ### 软引用
 
-被软引用关联的对象只有在内存不够时才会被回收
-
-使用 SoftReference 类来创建软引用
+使用 SoftReference 类来创建软引用。被软引用关联的对象在内存不够时才会被回收。
 
 ```java
 Object obj = new Object();
@@ -56,26 +52,22 @@ obj = null;  // 使对象只被软引用关联
 
 ### 弱引用
 
-被弱引用关联的对象只能存活到下一次垃圾回收时
-
-使用 WeakReference 类来创建软引用
+使用 WeakReference 类来创建弱引用。被弱引用关联的对象只能存活到下一次垃圾回收时。
 
 ```java
 Object obj = new Object();
 WeakReference<Object> wf = new WeakReference<>(obj);
-obj = null;
+obj = null;  // 使对象只被弱引用关联
 ```
 
 ### 虚引用
 
-又称为幽灵引用或者幻影引用，一个对象是否有虚引用的存在，不会对其生存时间造成影响，也无法通过虚引用得到一个对象。为一个对象设置虚引用的唯一目的是能在这个对象被回收时收到一个系统通知。
-
-使用 PhantomReference 来创建虚引用。
+又称为幽灵引用或者幻影引用，使用 PhantomReference 类来创建虚引用。一个对象是否有虚引用的存在，不会对其生存时间造成影响，也无法通过虚引用得到一个对象。为一个对象设置虚引用的唯一目的是能在这个对象被回收时收到一个系统通知。
 
 ```java
 Object obj = new Object();
 PhantomReference<Object> pf = new PhantomReference<>(obj, null);
-obj = null;
+obj = null;  // 使对象只被虚引用关联
 ```
 
 ## 内存分配策略

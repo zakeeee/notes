@@ -24,7 +24,7 @@ Kafka 并没有提供太多高超的技巧，对于生产者，可以将消息�
 
 ### 生产
 
-Kafka 中消息被发送到哪个分片由生产者自己来决定。生产者可以使用随机、哈希、轮询等方式来决定把消息发送到哪个分片。生产者将会和主题下所有 partition leader 保持 socket 连接。消息由生产者直接通过 socket 发送到 broker，中间不会经过任何“路由层”。其中 partition leader 的位置（host:port）注册在 zookeeper 中，生产者作为 zookeeper 客户端，已经注册了 watch 用来监听 partition leader 的变更事件。
+**Kafka 中消息被发送到哪个分片由生产者自己来决定**。生产者可以使用随机、哈希、轮询等方式来决定把消息发送到哪个分片。生产者将会和主题下所有 partition leader 保持 socket 连接。消息由生产者直接通过 socket 发送到 broker，中间不会经过任何“路由层”。其中 partition leader 的位置（host:port）注册在 zookeeper 中，生产者作为 zookeeper 客户端，已经注册了 watch 用来监听 partition leader 的变更事件。
 
 Kafka 支持异步发送，将多条消息暂且在客户端缓存起来，并将他们批量的发送到 broker，小数据 IO 太多，会拖慢整体的网络延迟，批量延迟发送事实上提升了网络效率。不过这也有一定的隐患，比如说当生产者失效时，那些尚未发送的消息将会丢失。
 
@@ -34,7 +34,7 @@ Kafka 支持异步发送，将多条消息暂且在客户端缓存起来，并�
 
 Kafka 采用 pull 模式来消费消息，这样的好处是消费者可以根据自己的消费能力来消费消息数据，并且可以自己控制消费的 offset。
 
-Kafka 由消费者自己来控制 offset，消费者可以在本地保存最后消费的 offset，并定期向 zookeeper 注册 offset。
+**Kafka 由消费者自己来控制 offset**，消费者可以在本地保存最后消费的 offset，并定期向 zookeeper 注册 offset。
 
 ## 底层存储
 

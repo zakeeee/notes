@@ -186,7 +186,7 @@ public static void main(String[] args) {
 
 ### 线程池关键参数
 
-- corePoolSize：核心线程个数，即线程池创建时其中的线程数量，也是一个线程池中至少拥有的线程数量。
+- corePoolSize：核心线程个数，即保持在线程池中的最小线程个数，不管线程是否空闲，除非设置了 `allowCoreThreadTimeOut`，才会根据存活时间回收核心线程。
 - maximumPoolSize：最大线程个数，即线程池里的线程最多可以增加到的数量。
 - workQueue：任务队列，保存等待执行的任务的阻塞队列。线程池里的线程会去任务队列里获取任务并执行。
 - keepAliveTime：超过核心线程个数的闲置线程的存活时间，超过这个时间的闲置线程会被回收。

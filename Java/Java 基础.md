@@ -2,11 +2,33 @@
 
 [TOC]
 
-## Java里面只有值传递
+## Java 中的关键字
 
-Java里面只有值传递，调用方法传入引用时，其实引用也会被拷贝。
+关键字一律用小写字母标识，按其用途划分为如下几组。
 
-## ==与equals()
+**用于数据类型**
+
+boolean、byte、char、double、float、int、long、new、short、void、instanceof。
+
+**用于语句**
+
+break、case、catch、continue、default 、do、else、for、if、return、switch、try、while、finally、throw、this、super。
+
+**用于修饰**
+
+abstract、final、native、private、protected、public、static、synchronized、transient、volatile。
+
+**用于方法、类、接口、包和异常**
+
+用于方法、类、接口、包和异常的关键字有 class、extends、implements、interface、package、import、throws。
+
+另外，Java还有3个保留字：true、false、null。它们不是关键字，而是文字。包含Java定义的值。和关键字一样,它们也不可以作为标识符使用。
+
+## 引用传递与值传递
+
+Java 里面只有值传递，调用方法传入引用时，其实引用也会被拷贝一份。
+
+## == 与 equals()
 
 == : 它的作用是判断两个对象的地址是不是相等。即，判断两个对象是不是同一个对象。(基本数据类型==比较的是值，引用数据类型==比较的是内存地址)
 
@@ -15,23 +37,26 @@ equals() : 它的作用也是判断两个对象是否相等。但它一般有两
 - 情况1：类没有覆盖equals()方法。则通过equals()比较该类的两个对象时，等价于通过“==”比较这两个对象。
 - 情况2：类覆盖了equals()方法。一般，我们都覆盖equals()方法来两个对象的内容相等；若它们的内容相等，则返回true(即，认为这两个对象相等)。
 
-## hashCode()与equals()
+## hashCode() 与 equals()
 
-Java 里 HashSet 或者 HashMap 判断是否存在相同对象时，首先判断计算出的哈希值，如果哈希值不同，就认为没有相同对象；如果哈希值相同，再调用 equals() 判断是否真的相同，如果相同，就不会将对象添加进来，如果不同，就重新散列到其他位置，减少了使用 equals() 比较的次数，提高效率。
+### 为什么重写 equals() 还要重写 hashCode()
+
+Java 里 HashMap 判断是否存在某个对象时，首先需要计算出对象的哈希值，然后找到对应桶下标，并遍历桶中的元素；如果找到一个哈希值相同的对象，再使用 equals() 判断是否真的相同，如果相同就说明存在，如果不相同就继续遍历，直到遍历结束。因此如果重写了 equals 而没有重写 hashCode，那么相同的对象也会被映射到不同的桶下标，这显然是不符合原意的。
+
+> HashSet 本质上也是使用 HashMap 实现的，所以道理是一样的。
 
 ### hashCode() 与 equals() 的相关规定
 
-1. 如果两个对象相等，则 hashcode 一定也是相同的
-2. 两个对象相等,对两个对象分别调用 equals 方法都返回 true
-3. 两个对象有相同的 hashcode 值，它们也不一定是相等的
-4. **因此，equals 方法被覆盖过，则 hashCode 方法也必须被覆盖**
-5. hashCode() 的默认行为是对堆上的对象产生独特值。如果没有重写hashCode()，则该 class 的两个对象无论如何都不会相等（即使这两个对象指向相同的数据）
+1. 如果两个对象相等，则哈希值一定也是相同的。
+2. 两个对象相等，对两个对象分别调用 equals() 方法都返回 true，即 a.equals(b) == b.equals(a) == true。
+3. 两个对象有相同的哈希值，它们也不一定是相等的，可能存在哈希冲突。
+4. **因此，equals() 方法被覆盖过，则 hashCode() 方法也必须被覆盖**。
+5. hashCode() 的默认行为是对堆上的对象产生独特值。如果没有重写 hashCode()，则该类的两个对象无论如何都不会相等。（即使这两个对象指向相同的数据）
 
-## String、StringBuffer、StringBuilder区别
+## String、StringBuffer、StringBuilder 的区别
 
-String是不可变的，StringBuffer和StringBuilder是可变的。
-StringBuffer是线程安全的。
-StringBuilder是非线程安全的。
+- String 是不可变的，StringBuffer 和 StringBuilder 是可变的。
+- StringBuffer 是线程安全的，StringBuilder 是非线程安全的。
 
 一般情况下，执行字符串拼接时，效率排名：StringBuilder > StringBuffer > String。
 
@@ -41,9 +66,11 @@ StringBuilder是非线程安全的。
 String str = "123" + "456";
 ```
 
-那么JVM会优化为一个String对象，即"123456"，这种情况下String速度最快。
+那么 JVM 会把两个字符串常量对象优化为一个字符串常量对象，即 "123456"，这种情况下 String 速度最快。
 
 ## 序列化
+
+序列化就是将一个 Java 对象转化为字节流，而反序列化就是从一个字节流中还原出这个对象。
 
 ## Java 实现多态的方式
 
