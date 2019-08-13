@@ -267,7 +267,9 @@ Java 提供了两种锁机制来控制多个线程对共享资源的互斥访问
 
 1. 同步一个代码块
 
-它只作用于同一个对象，如果调用两个对象上的同步代码块，就不会进行同步。
+作用于 synchronized 关键字后面括号中的对象。可以认为需要获得这个对象的锁，后面每次遇到 synchronized 关键字后面括号里是这个对象时，都要进行同步。
+
+而如果两个代码块的 synchronized 后面的对象不是同一个对象，就不会进行同步。
 
 ```java
 public void func() {
@@ -279,7 +281,7 @@ public void func() {
 
 2. 同步一个方法
 
-它和同步代码块一样，作用于同一个对象。
+作用于调用这个方法的对象本身，类似 synchronized(this)，同样可以认为需要获得这个对象的锁。每次调用这个对象的被 synchronized 修饰的方法时都要进行同步，即使它们是不同的方法。
 
 ```java
 public synchronized void func () {
@@ -289,7 +291,9 @@ public synchronized void func () {
 
 3. 同步一个类
 
-作用于整个类，也就是说两个线程调用同一个类的不同对象上的这种同步语句，也会进行同步。
+作用于 synchronized 关键字后面括号中的类，可以认为需要获取这个类的锁。
+
+多个线程调用同一个类的不同对象上的这种同步语句，也会进行同步。
 
 ```java
 public void func() {
@@ -301,7 +305,7 @@ public void func() {
 
 4. 同步一个静态方法
 
-同样作用于整个类。
+作用于这个方法所在的类本身，可以认为需要获取这个类的锁。每次调用这个类的被 synchronized 修饰的静态方法时都要进行同步，即使它们是不同的方法。
 
 ```java
 public synchronized static void fun() {
@@ -320,9 +324,7 @@ public class LockExample {
     public void func() {
         lock.lock();
         try {
-            for (int i = 0; i < 10; i++) {
-                System.out.print(i + " ");
-            }
+            // ...
         } finally {
             lock.unlock();  // finally 中确保释放锁，从而避免发生死锁。
         }
@@ -356,9 +358,7 @@ synchronized 是 JVM 实现的，而 ReentrantLock 是 JDK 实现的。
 
 ReentrantLock 可中断，而 synchronized 不行。
 
-4. 公平锁
-
-公平锁是指多个线程在等待同一个锁时，必须按照申请锁的时间顺序来依次获得锁。
+4. 公平性
 
 synchronized 中的锁是非公平的，ReentrantLock 默认情况下也是非公平的，但是也可以是公平的。
 
