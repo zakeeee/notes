@@ -24,12 +24,30 @@ Java 中的 BIO、NIO和 AIO 理解为是 Java 语言对操作系统的各种 IO
 
 ## BIO (Blocking IO)
 
-同步阻塞IO，数据的读写必须阻塞在一个线程内等待其完成。
+**同步阻塞 IO**，数据的读写必须阻塞在一个线程内等待其完成。
 
-## NIO (New IO)
+java.io 和 java.net 包下的一些类和接口，比如基于字节流的 InputStream，OutputStream，基于字符流的 Reader，Writer 等。
 
-NIO是一种同步非阻塞的I/O模型，在Java 1.4 中引入了NIO框架，对应 java.nio 包，提供了 Channel , Selector，Buffer等抽象。AIO (Asynchronous IO)
+![](_v_images/20190814131159363_25687.png)
+
+## NIO (Non-Blocking IO)
+
+NIO 是一种**多路复用、同步非阻塞 IO **模型，在 Java 1.4 中引入了 NIO 框架，对应 java.nio 包，提供了 Channel , Selector，Buffer 等抽象。
+
+![](_v_images/20190814131211742_28558.png)
+
+IO 多路复用：调用系统级别的 select/poll/epoll
+
+![](_v_images/20190814131726777_24327.png)
+
+![](_v_images/20190814131912991_30504.png)
+
+![](_v_images/20190814131924867_32729.png)
+
+![](_v_images/20190814131957323_26152.png)
 
 ## AIO
 
-也就是 NIO 2。在 Java 7 中引入了 NIO 的改进版 NIO 2,它是异步非阻塞的IO模型。异步 IO 是基于事件和回调机制实现的，也就是应用操作之后会直接返回，不会堵塞在那里，当后台处理完成，操作系统会通知相应的线程进行后续的操作。
+也就是 NIO 2。在 Java 7 中引入了 NIO 的改进版 NIO 2,它是异步非阻塞的 IO 模型。AIO 是**基于事件和回调机制**实现的，也就是应用操作之后会直接返回，不会堵塞在那里，当后台处理完成，操作系统会通知相应的线程进行后续的操作。
+
+![](_v_images/20190814132052524_16842.png)

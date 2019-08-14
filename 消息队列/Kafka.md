@@ -152,3 +152,21 @@ Kafka 将每个分片数据复制到多个服务器上，任何一个分片有�
 - 将所有 n 个 broker 和待分配的 m 个 partition 排序。
 - 将第 i 个 partition 分配到第 `i mod n` 个 broker 上。
 - 将第 i 个 partition 的第 j 个副本分配到第 `(i + j) mod n` 个 broker 上。
+
+## 如何避免消息丢失
+
+### Producer
+
+1. 使用带回调的发送方式，能够确认消息是否发送成功。
+2. 设置 ack 为所有 broker 都收到消息才是已提交。
+3. 设置 retries 重试次数大一些。
+
+### Broker
+
+1. 设置 `unclean.leader.election.enable=false`，即如果一个 broker 落后原 leader 太多，就不允许被选举为 leader。
+2. 设置 `replication.factor >= 3`，保存多份消息。
+3. 设置 `min.insync.replica > 1`，控制消息至少被写入多少个副本才算是已提交。
+
+### Consumer
+
+1. 关闭自动提交 offset，让消费者消费完手动提交 offset。
