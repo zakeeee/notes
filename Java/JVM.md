@@ -30,6 +30,12 @@ JDK1.8 之后：方法区常量池移动到了堆中
 - 方法区
 - 直接内存 (非运行时数据区的一部分)
 
+JDK 1.7 之前，方法区位于永久代，永久代和堆相互隔离，永久代的大小在启动 JVM 时可以设置一个固定值，不可变。
+JDK 1.7 中，存储在永久代的部分数据就已经转移到 Java Heap 或者 Native Memory。但永久代仍存在于 JDK 1.7 中，并没有完全移除，譬如符号引用（Symbols）转移到了 Native Memory，字符串常量池（Interned Strings）转移到了 Java heap，类的静态变量（Class Statics）转移到了 Java heap。
+JDK 1.8 中，取消永久代，方法存放于元空间（Metaspace），元空间仍然与堆不相连，但与堆共享物理内存，逻辑上可认为在堆中。
+
+> Native Memory：本地内存，也称为 C-Heap，是供 JVM 自身进程使用的。当 Java Heap 空间不足时会触发 GC，但 Native Memory 空间不够却不会触发 GC。
+
 ## 四种引用类型
 
 ### 强引用
