@@ -6,36 +6,45 @@
 
 关键字一律用小写字母标识，按其用途划分为如下几组。
 
-**用于数据类型**
-
-boolean、byte、char、double、float、int、long、new、short、void、instanceof。
-
-**用于语句**
-
-break、case、catch、continue、default 、do、else、for、if、return、switch、try、while、finally、throw、this、super。
-
-**用于修饰**
-
-abstract、final、native、private、protected、public、static、synchronized、transient、volatile。
-
-**用于方法、类、接口、包和异常**
-
-用于方法、类、接口、包和异常的关键字有 class、extends、implements、interface、package、import、throws。
-
-另外，Java还有3个保留字：true、false、null。它们不是关键字，而是文字。包含Java定义的值。和关键字一样,它们也不可以作为标识符使用。
+|            用途            |                                                      关键字                                                      |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| 用于数据类型                | boolean、byte、char、double、float、int、long、new、short、void、instanceof                                      |
+| 用于语句                   | break、case、catch、continue、default 、do、else、for、if、return、switch、try、while、finally、throw、this、super |
+| 用于修饰                   | abstract、final、native、private、protected、public、static、synchronized、transient、volatile                    |
+| 用于方法、类、接口、包和异常 | class、extends、implements、interface、package、import、throws                                                   |
+| 保留字                     | true、false、null                                                                                               |
 
 ## 引用传递与值传递
 
-Java 里面只有值传递，调用方法传入引用时，其实引用也会被拷贝一份。
+Java 里面只有值传递，当调用一个方法并传入引用时，这个引用会被拷贝一份。因此在方法中直接操作引用（比如让它指向另一个对象）对方法的调用者来说是没有影响的。
+
+```java
+class Main {
+    public static void foo(String str) {
+        str = "123";
+    }
+
+    public static void main(String[] args) {
+        String str = "abc";
+        foo(str);
+        System.out.println(str);
+    }
+}
+
+/*
+输出：
+abc
+*/
+```
 
 ## == 与 equals()
 
-== : 它的作用是判断两个对象的地址是不是相等。即，判断两个对象是不是同一个对象。(基本数据类型==比较的是值，引用数据类型==比较的是内存地址)
+`==` 是判断两个对象的地址是不是相等。即判断两个对象是不是同一个对象。(基本数据类型比较的是值，引用数据类型比较的是内存地址)
 
-equals() : 它的作用也是判断两个对象是否相等。但它一般有两种使用情况：
+`equals()` 也是判断两个对象是否相等，但它一般有两种使用情况：
 
-- 情况1：类没有覆盖equals()方法。则通过equals()比较该类的两个对象时，等价于通过“==”比较这两个对象。
-- 情况2：类覆盖了equals()方法。一般，我们都覆盖equals()方法来两个对象的内容相等；若它们的内容相等，则返回true(即，认为这两个对象相等)。
+- 情况1：类没有覆盖 `equals()` 方法。则通过 `equals()` 比较该类的两个对象时，等价于通过 `==` 比较这两个对象。
+- 情况2：类覆盖了 `equals()` 方法。一般我们都覆盖 `equals()` 方法来判断两个对象的内容是否相等，如果内容相等，则返回 true（即认为这两个对象相等）。
 
 ## hashCode() 与 equals()
 

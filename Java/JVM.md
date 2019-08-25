@@ -108,10 +108,10 @@ obj = null;  // 使对象只被虚引用关联
 
 如果不成立的话虚拟机会查看 HandlePromotionFailure 的值是否允许担保失败，如果允许那么就会继续检查老年代最大可用的连续空间是否大于历次晋升到老年代对象的平均大小，如果大于，将尝试着进行一次 Minor GC；如果小于，或者 HandlePromotionFailure 的值不允许冒险，那么就要进行一次 Full GC。
 
-## 垃圾回收
+## JVM 垃圾回收
 
 [JVM 垃圾回收.md](JVM%20垃圾回收.md)
 
-## 类加载
+## JVM 类加载
 
 [JVM 类加载.md](JVM%20类加载.md)

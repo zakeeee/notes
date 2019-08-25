@@ -11,6 +11,7 @@ ArrayList 是一个基于可变长数组的 List 实现类。
 ArrayList和Vector底层都是用数组来实现的。
 
 ArrayList是非线程安全的。
+
 Vector所有方法都是同步的，是线程安全的，但是如果不需要考虑线程安全性，Vector的性能就低很多。
 
 ## ArrayDeque
@@ -27,11 +28,14 @@ HashMap 是基于哈希的 Map 实现类。由于是基于哈希的，容器中�
 
 ### HashMap 扩容
 
-HashMap 扩容需要同时满足两个条件：当 HashMap 中条目的数量超过阈值，且插入的元素刚好出现哈希冲突。
+HashMap 扩容需要同时满足两个条件：
 
-阈值 threshold = loadFactor * capacity。
+- HashMap 中条目（Entry）的数量超过阈值（threshold）。
+- 插入的元素刚好出现哈希冲突，即插入了一个非空的桶中。
 
-容量扩展为原来的两倍，并把所有元素进行重新映射。
+> threshold = loadFactor * capacity。
+
+容量扩展为原来的两倍，并把所有元素进行**重新映射**。
 
 HashMap 插入时在 JDK 1.7 以前是采用头插法，JDK 1.8 之后是插入尾部，并且一个桶中元素大于 8 时转为红黑树。
 
@@ -45,8 +49,8 @@ HashMap 插入时在 JDK 1.7 以前是采用头插法，JDK 1.8 之后是插入�
 
 ### HashMap和HashTable的区别
 
-HashMap是非线程安全的，键值可以为null。
-HashTable是线程安全的，键值不能为null，HashTable现在已经被淘汰了，如果要保证线程安全应该用ConcurrentHashMap。
+HashMap 是非线程安全的，键值可以为 null。
+HashTable 是线程安全的，键值不能为 null，HashTable 现在已经被淘汰了，如果要保证线程安全应该用 ConcurrentHashMap。
 
 ## HashSet
 

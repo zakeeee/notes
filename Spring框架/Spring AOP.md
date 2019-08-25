@@ -1,8 +1,8 @@
 # Spring AOP
 
-AOP(Aspect-Oriented Programming:面向切面编程)能够将那些与业务无关，**却为业务模块所共同调用的逻辑或责任（例如事务处理、日志管理、权限控制等）封装起来**，便于**减少系统的重复代码，降低模块间的耦合度**，并**有利于未来的可拓展性和可维护性**。
+AOP（Aspect-Oriented Programming，面向切面编程）能够将那些与业务无关，却为业务模块所共同调用的逻辑或责任（例如事务处理、日志管理、权限控制等）封装起来，便于减少系统的重复代码，降低模块间的耦合度，并有利于未来的可拓展性和可维护性。
 
-**Spring AOP 就是基于动态代理的**，如果要代理的对象，实现了某个接口，那么 Spring AOP 会使用 JDK Proxy，去创建代理对象，而对于没有实现接口的对象，就无法使用 JDK Proxy 去进行代理了，这时候 Spring AOP 会使用 Cglib ，这时候 Spring AOP 会使用 Cglib 生成一个被代理对象的子类来作为代理，如下图所示：
+Spring AOP 就是基于动态代理的，如果要代理的对象，实现了某个接口，那么 Spring AOP 会使用 JDK Proxy，去创建代理对象，而对于没有实现接口的对象，就无法使用 JDK Proxy 去进行代理了，这时候 Spring AOP 会使用 CGLib ，这时候 Spring AOP 会使用 CGLib 生成一个被代理对象的子类来作为代理，如下图所示：
 
 ![Image(12)](_v_images/20190723215722974_32448.png)
 
@@ -30,4 +30,4 @@ Spring 中对应了 5 种不同类型的通知：
 
 切面包含了通知和切点，通知和切点共同定义了切面是什么，在何时，何处执行切面逻辑。
 
-参考：[Spring AOP源码解析](https://www.javadoop.com/post/spring-aop-source?hmsr=toutiao.io&utm_medium=toutiao.io&utm_source=toutiao.io)
+[Spring AOP源码解析](https://www.javadoop.com/post/spring-aop-source?hmsr=toutiao.io&utm_medium=toutiao.io&utm_source=toutiao.io)
