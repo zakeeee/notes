@@ -40,7 +40,7 @@ JDK 1.8 中，取消永久代，方法存放于元空间（Metaspace），元空
 
 ### 强引用
 
-使用 new 关键字创建一个新对象的方式来创建强引用。被强引用关联的对象不会被回收，除非引用计数为 0。
+使用 new 关键字创建一个新对象的方式来创建强引用。被强引用关联的对象不会被回收。
 
 ```java
 Object obj = new Object();
@@ -88,13 +88,13 @@ obj = null;  // 使对象只被虚引用关联
 
 经常出现大对象会提前触发垃圾收集以获取足够的连续空间分配给大对象。
 
--XX:PretenureSizeThreshold，大于此值的对象直接在老年代分配，避免在 Eden 和 Survivor 之间的大量内存复制。
+JVM 启动时使用 `-XX:PretenureSizeThreshold` 参数设定阈值，大于此值的对象直接在老年代分配，避免在 Eden 和 Survivor 之间的大量内存复制。
 
 ### 3. 长期存活的对象也进入老年代
 
 为对象定义年龄计数器，对象在 Eden 出生并经过 Minor GC 依然存活，将移动到 Survivor 中，年龄就增加 1 岁，增加到一定年龄则移动到老年代中。
 
--XX:MaxTenuringThreshold 用来定义年龄的阈值。
+JVM 启动时使用 `-XX:MaxTenuringThreshold` 参数设定年龄的阈值。
 
 ### 4. 动态对象年龄判定
 
