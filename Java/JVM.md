@@ -115,3 +115,7 @@ JVM 启动时使用 `-XX:MaxTenuringThreshold` 参数设定年龄的阈值。
 ## JVM 类加载
 
 [JVM 类加载.md](JVM%20类加载.md)
+
+## JVM 运行堆和栈信息
+
+[获取 JVM 进程的线程堆栈 dump 和堆 dump](http://0000-bigtree.github.io/blog/2017/03/05/get-java-process-stack.html)
