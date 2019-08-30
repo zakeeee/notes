@@ -14,6 +14,8 @@ Accumulator 比 Adder 功能更强大，可以提供初始值和双目运算方�
 
 AQS（Abstract Queued Synchronizer，抽象队列同步器）是构建锁或者其他同步组件的基础框架（如 ReentrantLock、ReentrantReadWriteLock、Semaphore 等），是 JUC 并发包中的核心基础组件。
 
+AQS 是一个抽象类，Sync 类继承自 AQS。
+
 ## CountDownLatch
 
 类似于一个计数器，用于一个线程等待其他若干线程都执行完毕再继续往下执行。
