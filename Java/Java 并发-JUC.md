@@ -2,9 +2,17 @@
 
 [TOC]
 
+## 原子类
+
+JUC 包中的原子类都是使用 CAS 实现的，一个 CAS 操作的定义类似于 `compareAndSwap(obj, offset, expected, update)`，其中 expected 是对要修改的变量当前值的期望值，如果变量的值不是这个值，CAS 操作会失败，update 是要把变量修改修改成的值。
+
+除了 AtomicXXX 的类之外，JDK 1.8 之后还提供了 LongAdder，DoubleAdder，LongAccumulator，DoubleAccumulator 等原子操作类。AtomicXXX 类是多个线程对同一个值进行操作，而 Adder 和 Accumulator 是对一组 Cell 对象进行操作，每个 Cell 对象都保存了一个值以及一个 CAS 操作方法。
+
+Accumulator 比 Adder 功能更强大，可以提供初始值和双目运算方法。
+
 ## AQS
 
-AQS（Abstract Queued Synchronizer，队列同步器）是构建锁或者其他同步组件的基础框架（如 ReentrantLock、ReentrantReadWriteLock、Semaphore 等），是 JUC 并发包中的核心基础组件。
+AQS（Abstract Queued Synchronizer，抽象队列同步器）是构建锁或者其他同步组件的基础框架（如 ReentrantLock、ReentrantReadWriteLock、Semaphore 等），是 JUC 并发包中的核心基础组件。
 
 ## CountDownLatch
 
