@@ -107,9 +107,9 @@ struct sdshdr {
 
 [Redis内存管理.md](Redis内存管理.md)
 
-## Pipeline
+## Redis 管道
 
-Redis 提供了批量执行命令的方法，即使用 pipeline。
+Redis 提供了批量执行命令的方法，即使用管道（Pipeline）。
 
 - Pipeline 和 Linux 的管道类似。
 - Redis 基于请求/响应模型，单个请求处理需要一一应答。

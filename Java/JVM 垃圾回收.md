@@ -97,25 +97,22 @@ HotSpot 虚拟机的 Eden 和 Survivor 大小比例默认为 8:1，保证了内�
 
 ## Full GC 和 Minor GC
 
-### Minor GC
+- Minor GC：只回收新生代，由于新生代存活时间短，因此 Minor GC 会频繁执行，速度一般比较快。
+- Full GC：回收新生代和老年代，由于老年代存活时间长，因此 Full GC 很少执行，速度也比 Minor GC 慢很多。
 
-只回收新生代，由于新生代存活时间短，因此 Minor GC 会频繁执行，速度一般比较快。
+---
 
-### Full GC
+**Full GC 触发条件**
 
-回收新生代和老年代，由于老年代存活时间长，因此 Full GC 很少执行，速度也比 Minor GC 慢很多。
+1. 调用 System.gc() 方法
 
-### Full GC 触发条件
+2. 老年代空间不足
 
-#### 1. 调用 System.gc()
+3. 空间分配担保失败
 
-#### 2. 老年代空间不足
+4. JDK 1.7 以前的永久代空间不足
 
-#### 3. 空间分配担保失败
-
-#### 4. JDK 1.7 以前的永久代空间不足
-
-#### 5. Concurrent Mode Failure
+5. Concurrent Mode Failure
 
 ## 垃圾收集器
 
