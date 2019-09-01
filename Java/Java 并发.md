@@ -194,6 +194,10 @@ public static void main(String[] args) {
 - ThreadFactory：创建线程的工厂类。
 - RejectedExecutionHandler：线程达到最大线程数，且任务队列满了之后的拒绝策略。
 
+### 线程池超时回收
+
+[参考](https://www.jianshu.com/p/5d5a37062512)
+
 ## 中断
 
 ### interrupt 方法
