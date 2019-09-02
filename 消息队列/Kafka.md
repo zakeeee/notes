@@ -34,6 +34,8 @@ Kafka 采用 pull 模式来消费消息，这样的好处是消费者可以根�
 
 **Kafka 由消费者自己来控制 offset**，消费者可以在本地保存最后消费的 offset，并定期向 zookeeper 注册 offset。
 
+在 Kafka 0.9 版本之后，Kafka 为了降低 ZooKeeper 的 IO 读写，减少 network data transfer，也自己实现了在 Kafka Server 上存储Consumer，Topic，Partitions，Offset 信息，将消费的 Offset 迁入到了 Kafka 一个名为 `__consumer_offsets` 的 Topic 中。
+
 ## 底层存储
 
 每个分片在文件系统中是一个目录，每个分片由几个部分组成。
