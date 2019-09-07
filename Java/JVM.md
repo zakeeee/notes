@@ -42,6 +42,8 @@ JDK 1.8 中，取消永久代，方法存放于元空间（Metaspace），元空
 
 > Native Memory：本地内存，也称为 C-Heap，是供 JVM 自身进程使用的。当 Java Heap 空间不足时会触发 GC，但 Native Memory 空间不够却不会触发 GC。
 
+[Java方法区、永久代、元空间、常量池详解](https://blog.csdn.net/u011635492/article/details/81046174)
+
 ## 四种引用类型
 
 ### 1. 强引用
