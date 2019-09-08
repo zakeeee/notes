@@ -2,6 +2,12 @@
 
 [TOC]
 
+## Kafka 能做啥
+
+- 消息系统
+- 消息存储
+- 流计算
+
 ## 消息模型
 
 Kafka 也是使用的标准的发布-订阅模型。与 [RocketMQ](RocketMQ.md) 类似。唯一的区别是 Kafka 中队列不叫队列，而叫做分片（Partition），含义和功能是一样的。
