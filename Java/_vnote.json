@@ -25,16 +25,6 @@
             "attachment_folder": "",
             "attachments": [
             ],
-            "created_time": "2019-07-24T01:43:02Z",
-            "modified_time": "2019-08-25T10:09:06Z",
-            "name": "Java 容器类.md",
-            "tags": [
-            ]
-        },
-        {
-            "attachment_folder": "",
-            "attachments": [
-            ],
             "created_time": "2019-07-24T01:43:14Z",
             "modified_time": "2019-08-25T09:36:02Z",
             "name": "Java 基础.md",
@@ -123,6 +113,9 @@
         }
     ],
     "sub_directories": [
+        {
+            "name": "Java 容器类"
+        }
     ],
     "version": "1"
 }
