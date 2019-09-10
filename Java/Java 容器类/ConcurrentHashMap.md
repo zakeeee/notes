@@ -6,6 +6,8 @@
 
 JDK 1.7 中使用了分段锁的方法来提高性能。其中分段锁 Segment 是继承自 ReentrantLock 的。JDK 1.7 中的 ConcurrentHashMap 维护了一个 Segment 数组，每个 Segment 里面有一个 HashEntry 数组。查找时首先根据哈希值找到对应的段 Segment，然后在这个段中再根据哈希值找到对应的 HashEntry 数组下标，也就是在每个段中就类似 HashMap 的查找了。put 方法加锁时是对一个 Segment 加锁的，因此如果两个线程操作不同的 Segment 那么是不会发生竞争的。
 
+![](_v_images/20190910113720521_21458.png)
+
 ```java
 /**
  * Segment 数组，存放数据时首先需要定位到具体的 Segment 中。
@@ -35,11 +37,35 @@ static final class Segment<K,V> extends ReentrantLock implements Serializable {
 }
 ```
 
+---
+
 JDK 1.8 中没有使用分段锁，而是在 put 的时候使用了 CAS + synchronized 的方法。
 
 ## 关键源码
 
 ### JDK 1.7
+
+#### hash
+
+```java
+private int hash(Object k) {
+    int h = hashSeed;
+
+    if ((0 != h) && (k instanceof String)) {
+        return sun.misc.Hashing.stringHash32((String) k);
+    }
+
+    h ^= k.hashCode();
+
+    // 此处使用的是Wang/Jenkins hash的变种算法！
+    h += (h <<  15) ^ 0xffffcd7d;
+    h ^= (h >>> 10);
+    h += (h <<   3);
+    h ^= (h >>>  6);
+    h += (h <<   2) + (h << 14);
+    return h ^ (h >>> 16);
+}
+```
 
 #### put
 

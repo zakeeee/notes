@@ -13,13 +13,21 @@ JDK 1.7 中，HashMap 扩容需要同时满足两个条件：
 - 键值对的数量大于阈值。
 - 插入的元素刚好出现哈希冲突，即插入了一个非空的桶中。
 
+---
+
 JDK 1.8 中，只要键值对的数量大于阈值。
+
+### 多线程不安全
+
+HashMap 如果在扩容时有其他线程进行 put 操作，可能会出现死循环的问题。
+
+为什么呢？
 
 ## JDK 1.8 中 HashMap 的优化
 
-- 链表长度超过阈值转红黑树。
-- hash 方法优化。
-- 扩容后
+- 一个桶中的链表长度超过阈值时转红黑树。
+- hash 方法优化，不用再进行多次位移，只需要位移一次。
+- 扩容机制优化，不用再每个键值对进行重新映射，而是分为了两个链表，详情请看后面的源码分析。
 
 **为什么转红黑树的阈值设置为 8**
 
@@ -42,13 +50,23 @@ HashTable 是线程安全的，方法使用 synchronized 修饰，键值不能�
 #### hash
 
 ```java
+final int hash(Object k) {
+    int h = hashSeed;
+    if (0 != h && k instanceof String) {
+        return sun.misc.Hashing.stringHash32((String) k);
+    }
 
+    h ^= k.hashCode();
+    h ^= (h >>> 20) ^ (h >>> 12);
+    return h ^ (h >>> 7) ^ (h >>> 4);
+}
 ```
 
 #### put
 
 ```java
 public V put(K key, V value) {
+    // 如果数组为空，初始化数组
     if (table == EMPTY_TABLE) {
         inflateTable(threshold);
     }
@@ -151,6 +169,61 @@ final Entry<K,V> getEntry(Object key) {
 
     // 没找到对应的 entry，返回 null
     return null;
+}
+```
+
+#### resize
+
+```java
+void resize(int newCapacity) {
+    Entry[] oldTable = table;
+    int oldCapacity = oldTable.length;
+
+    // 如果旧的容量已经达到了最大容量，就不扩容了，只是把阈值改为 Integer.MAX_VALUE
+    if (oldCapacity == MAXIMUM_CAPACITY) {
+        threshold = Integer.MAX_VALUE;
+        return;
+    }
+
+    // 创建新数组
+    Entry[] newTable = new Entry[newCapacity];
+
+    // 转移数据到新数组
+    transfer(newTable);
+    table = newTable;
+
+    // 计算阈值
+    threshold = (int) (newCapacity * loadFactor);
+}
+
+void transfer(Entry[] newTable) {
+    Entry[] src = table;
+    int newCapacity = newTable.length;
+
+    // 遍历旧的数组的每个位置
+    for (int j = 0; j < src.length; j++) {
+        Entry<K, V> e = src[j];
+
+        // 如果这个位置不为 null
+        if (e != null) {
+            src[j] = null;
+
+            // 遍历链表，每个元素都重新映射并连接到新的位置里
+            do {
+                Entry<K, V> next = e.next;
+                // 计算新的下标
+                int i = indexFor(e.hash, newCapacity);
+                // 头插法
+                e.next = newTable[i];
+                newTable[i] = e;
+                e = next;
+            } while (e != null);
+        }
+    }
+}
+
+static int indexFor(int h, int length) {
+        return h & (length - 1);
 }
 ```
 
