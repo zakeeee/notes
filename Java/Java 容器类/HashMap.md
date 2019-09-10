@@ -57,7 +57,7 @@ public V put(K key, V value) {
     if (key == null)
         return putForNullKey(value);
 
-    // 获取键的哈希值
+    // 根据键得到哈希值
     int hash = hash(key);
 
     // 根据哈希值找到数组下标
@@ -93,7 +93,7 @@ void addEntry(int hash, K key, V value, int bucketIndex) {
         // 数组大小扩容为当前的 2 倍
         resize(2 * table.length);
 
-        // 得到键的哈希值，如果键为 null，默认哈希值为 0
+        // 根据键得到哈希值，如果键为 null，默认哈希值为 0
         hash = (null != key) ? hash(key) : 0;
 
         // 根据哈希值得到数组下标
@@ -134,7 +134,7 @@ final Entry<K,V> getEntry(Object key) {
         return null;
     }
 
-    // 获取键的哈希值，如果键为 null，默认为 0
+    // 根据键得到哈希值，如果键为 null，默认为 0
     int hash = (key == null) ? 0 : hash(key);
 
     // 遍历链表
@@ -162,7 +162,7 @@ final Entry<K,V> getEntry(Object key) {
 static final int hash(Object key) {
     int h;
     // 如果键为 null，则默认是 0
-    // 否则获得键的哈希值 h，然后将 h 与 h  无符号右移 16 位后的数字异或
+    // 否则根据键得到哈希值 h，然后将 h 与 h  无符号右移 16 位后的数字异或
     return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
 }
 ```
@@ -281,7 +281,7 @@ final Node<K,V> getNode(int hash, Object key) {
 }
 ```
 
-#### resize（未整理完成）
+#### resize
 
 ```java
 final Node<K,V>[] resize() {
@@ -322,16 +322,17 @@ final Node<K,V>[] resize() {
     threshold = newThr;
 
     @SuppressWarnings({"rawtypes","unchecked"})
-    Node<K,V>[] newTab = (Node<K,V>[])new Node[newCap];
+    Node<K,V>[] newTab = (Node<K,V>[])new Node[newCap];  // 新的数组
     table = newTab;
 
     // 元素重新映射
     if (oldTab != null) {
-        // 遍历数组每个位置
+        // 遍历原数组每个位置
         for (int j = 0; j < oldCap; ++j) {
             Node<K,V> e;
             // 如果当前位置不为空
             if ((e = oldTab[j]) != null) {
+                // 先把原数组这个位置置为 null，后面会重新映射
                 oldTab[j] = null;
                 // 如果只有一个元素，直接放置到新的映射位置上
                 if (e.next == null)
@@ -341,13 +342,22 @@ final Node<K,V>[] resize() {
                     ((TreeNode<K,V>)e).split(this, newTab, j, oldCap);
                 // 否则是链表
                 else { // preserve order
-                    Node<K,V> loHead = null, loTail = null;
-                    Node<K,V> hiHead = null, hiTail = null;
+                    Node<K,V> loHead = null, loTail = null;  // low 链表
+                    Node<K,V> hiHead = null, hiTail = null;  // high 链表
                     Node<K,V> next;
 
-                    // 遍历链表
+                    // 遍历旧的数组 j 位置的链表，并根据 oldCap 中 1 的那一位来分为两个链表 low 和 high
+                    // 这么做是因为如果哈希值在那一位为 0，那么重新映射后他们在新数组中的下标与原数组中的下标相同
+                    // 如果那一位为 1，那么重新映射后，他们会被映射到原下标加上 oldCap 的位置
+                    // 以 oldCap 为 16 为例，扩容后 newCap 为 32
+                    // 如果最后五位是 00000 到 01111，也就是 0 到 15，那么重新映射后还是 0 到 15
+                    // 如果最后五位是 10000 到 11111，也就是 16 到 31，那么没扩容之前他们还是映射到 0 到 15
+                    // 但重新映射后就不是之前的 0 到 15 的位置，而是 16 到 31 的位置了，也就是多了一个 oldCap 的偏移
                     do {
                         next = e.next;
+                        // 由于 oldCap 是 2 的次幂，因此只会有一位是 1，比如 16 就是 10000
+                        // 如果 e 的哈希值在 oldCap 为 1 的那一位上是 0，就连接到 low 链表上
+                        // 如果是 1 就连接到 high 链表上
                         if ((e.hash & oldCap) == 0) {
                             if (loTail == null)
                                 loHead = e;
@@ -364,13 +374,13 @@ final Node<K,V>[] resize() {
                         }
                     } while ((e = next) != null);
 
-                    //
+                    // low 链表放在新的数组的 j 位置上
                     if (loTail != null) {
                         loTail.next = null;
                         newTab[j] = loHead;
                     }
 
-                    //
+                    // high 链表放在新的数组的 j + oldCap 位置上
                     if (hiTail != null) {
                         hiTail.next = null;
                         newTab[j + oldCap] = hiHead;
