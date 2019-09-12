@@ -77,16 +77,14 @@ public V put(K key, V value) {
 
     // 根据键得到哈希值
     int hash = hash(key);
-
-    // 根据哈希值找到数组下标
+    // 根据哈希值找到桶下标
     int i = indexFor(hash, table.length);
 
     // 遍历链表
     for (Entry<K,V> e = table[i]; e != null; e = e.next) {
         Object k;
-
-        // 如果 entry 的哈希值与目标哈希值相同，并且 entry 的键与目标键是一个对象或者两者 equals
-        // 就修改这个 entry，并返回旧的值
+        // 如果找到了目标键值对，就修改它的值，并返回旧的值
+        // 判断对象相等时首先判断两个哈希值，若哈希值相等再进行对象相等的判定
         if (e.hash == hash && ((k = e.key) == key || key.equals(k))) {
             V oldValue = e.value;
             e.value = value;
@@ -95,12 +93,10 @@ public V put(K key, V value) {
         }
     }
 
-    // 如果没找到对应 entry，说明需要插入一个，修改次数加 1
+    // 如果没找到对应键值对，说明需要插入一个，修改次数加 1
     modCount++;
-
-    // 然后添加一个 entry
+    // 然后添加一个键值对
     addEntry(hash, key, value, i);
-
     // 并返回 null，因为是新添加的，所以没有旧的值
     return null;
 }
@@ -114,11 +110,11 @@ void addEntry(int hash, K key, V value, int bucketIndex) {
         // 根据键得到哈希值，如果键为 null，默认哈希值为 0
         hash = (null != key) ? hash(key) : 0;
 
-        // 根据哈希值得到数组下标
+        // 根据哈希值得到桶下标
         bucketIndex = indexFor(hash, table.length);
     }
 
-    // 在对应数组位置创建一个 entry
+    // 在桶中添加一个键值对
     createEntry(hash, key, value, bucketIndex);
 }
 
@@ -139,10 +135,9 @@ public V get(Object key) {
     if (key == null)
         return getForNullKey();
 
-    // 根据键获取 entry
     Entry<K,V> entry = getEntry(key);
 
-    // 如果没找到对应 entry，就返回 null，否则返回 entry 的值
+    // 如果没找到对应键值对，就返回 null，否则返回键值对的值
     return null == entry ? null : entry.getValue();
 }
 
@@ -161,13 +156,13 @@ final Entry<K,V> getEntry(Object key) {
             e = e.next) {
         Object k;
 
-        // 如果 entry 的哈希值与目标哈希值相同，且 entry 的键与目标键是同一个对象或者两者 equals，返回这个 entry
+        // 如果找到了目标键值对，就返回它
         if (e.hash == hash &&
             ((k = e.key) == key || (key != null && key.equals(k))))
             return e;
     }
 
-    // 没找到对应的 entry，返回 null
+    // 没找到目标键值对，返回 null
     return null;
 }
 ```
@@ -200,11 +195,11 @@ void transfer(Entry[] newTable) {
     Entry[] src = table;
     int newCapacity = newTable.length;
 
-    // 遍历旧的数组的每个位置
+    // 遍历旧的数组的每个桶
     for (int j = 0; j < src.length; j++) {
         Entry<K, V> e = src[j];
 
-        // 如果这个位置不为 null
+        // 如果这个桶不为空
         if (e != null) {
             src[j] = null;
 
@@ -223,7 +218,7 @@ void transfer(Entry[] newTable) {
 }
 
 static int indexFor(int h, int length) {
-        return h & (length - 1);
+    return h & (length - 1);
 }
 ```
 
@@ -251,7 +246,7 @@ final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
     if ((tab = table) == null || (n = tab.length) == 0)
         n = (tab = resize()).length;
 
-    // 根据哈希值获得数组下标，然后获取对应下标的节点 p，如果为空，则插入新节点
+    // 根据哈希值获得桶的下标，然后获取桶中的第一个节点，如果为空，则插入新节点
     if ((p = tab[i = (n - 1) & hash]) == null)
         tab[i] = newNode(hash, key, value, null);
 
@@ -300,12 +295,10 @@ final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
 
     // 没有旧的值，修改次数加 1
     ++modCount;
-
     // 如果元素个数大于阈值，扩容
     if (++size > threshold)
         resize();
     afterNodeInsertion(evict);
-
     // 没有旧的值，所以返回 null
     return null;
 }
@@ -316,7 +309,6 @@ final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
 ```java
 public V get(Object key) {
     Node<K,V> e;
-
     // 如果没找到对应节点，返回 null，否则返回节点的值
     return (e = getNode(hash(key), key)) == null ? null : e.value;
 }
@@ -324,16 +316,16 @@ public V get(Object key) {
 final Node<K,V> getNode(int hash, Object key) {
     Node<K,V>[] tab; Node<K,V> first, e; int n; K k;
 
-    // 如果数组不为 null，且数组长度大于 0，且数组对应下标的元素不为 null
+    // 如果桶数组合法且桶不为空
     if ((tab = table) != null && (n = tab.length) > 0 &&
         (first = tab[(n - 1) & hash]) != null) {
 
-        // 判断数组对应位置第一个元素是否是要找的节点，如果是就返回这个节点
+        // 判断桶中第一个节点是否是要找的节点，如果是就返回这个节点
         if (first.hash == hash && // always check first node
             ((k = first.key) == key || (key != null && key.equals(k))))
             return first;
 
-        // 如果数组对应位置有超过一个节点
+        // 如果桶中有超过一个节点
         if ((e = first.next) != null) {
 
             // 如果第一个节点是红黑树节点，就使用红黑树的查找
@@ -400,10 +392,10 @@ final Node<K,V>[] resize() {
 
     // 元素重新映射
     if (oldTab != null) {
-        // 遍历原数组每个位置
+        // 遍历原数组每个桶
         for (int j = 0; j < oldCap; ++j) {
             Node<K,V> e;
-            // 如果当前位置不为空
+            // 如果当前桶不为空
             if ((e = oldTab[j]) != null) {
                 // 先把原数组这个位置置为 null，后面会重新映射
                 oldTab[j] = null;
@@ -414,7 +406,7 @@ final Node<K,V>[] resize() {
                 else if (e instanceof TreeNode)
                     ((TreeNode<K,V>)e).split(this, newTab, j, oldCap);
                 // 否则是链表
-                else { // preserve order
+                else {
                     Node<K,V> loHead = null, loTail = null;  // low 链表
                     Node<K,V> hiHead = null, hiTail = null;  // high 链表
                     Node<K,V> next;

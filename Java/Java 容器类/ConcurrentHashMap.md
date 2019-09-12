@@ -57,12 +57,12 @@ private int hash(Object k) {
 
     h ^= k.hashCode();
 
-    // 此处使用的是Wang/Jenkins hash的变种算法！
-    h += (h <<  15) ^ 0xffffcd7d;
+    // 此处使用的是 Wang/Jenkins 哈希的变种算法！
+    h += (h << 15) ^ 0xffffcd7d;
     h ^= (h >>> 10);
-    h += (h <<   3);
-    h ^= (h >>>  6);
-    h += (h <<   2) + (h << 14);
+    h += (h << 3);
+    h ^= (h >>> 6);
+    h += (h << 2) + (h << 14);
     return h ^ (h >>> 16);
 }
 ```
@@ -99,10 +99,10 @@ final V put(K key, int hash, V value, boolean onlyIfAbsent) {
     try {
         HashEntry<K,V>[] tab = table;
 
-        // 根据哈希值得到在数组中的下标
+        // 根据哈希值得到桶下标
         int index = (tab.length - 1) & hash;
 
-        // 得到这个下标位置的链表头
+        // 得到这个桶中的链表头
         HashEntry<K,V> first = entryAt(tab, index);
 
         // 遍历链表
@@ -175,7 +175,7 @@ public V get(Object key) {
     if ((s = (Segment<K,V>)UNSAFE.getObjectVolatile(segments, u)) != null &&
         (tab = s.table) != null) {
 
-        // 找到键值对在这个 Segment 中的数组中的下标，然后遍历对应下标位置的链表来查找目标键值对
+        // 根据键值对找到桶，然后遍历这个桶中的链表来查找目标键值对
         for (HashEntry<K,V> e = (HashEntry<K,V>) UNSAFE.getObjectVolatile
                  (tab, ((long)(((tab.length - 1) & h)) << TSHIFT) + TBASE);
              e != null; e = e.next) {
@@ -217,37 +217,44 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
     int hash = spread(key.hashCode());
     int binCount = 0;
 
-    // 
     for (Node<K,V>[] tab = table;;) {
         Node<K,V> f; int n, i, fh;
 
         // 如果数组为 null 或者长度为 0，初始化数组
         if (tab == null || (n = tab.length) == 0)
             tab = initTable();
+        // 如果是空的桶，使用 CAS 操作来添加节点，不加锁
         else if ((f = tabAt(tab, i = (n - 1) & hash)) == null) {
             if (casTabAt(tab, i, null,
                             new Node<K,V>(hash, key, value, null)))
                 break;                   // no lock when adding to empty bin
         }
+        // 如果正在执行扩容，则帮助转移这个节点
         else if ((fh = f.hash) == MOVED)
             tab = helpTransfer(tab, f);
+        // 否则使用同步
         else {
             V oldVal = null;
             synchronized (f) {
                 if (tabAt(tab, i) == f) {
+                    // 链表节点
                     if (fh >= 0) {
                         binCount = 1;
+                        // 遍历链表
                         for (Node<K,V> e = f;; ++binCount) {
                             K ek;
+                            // 如果找到了键相同的节点
                             if (e.hash == hash &&
                                 ((ek = e.key) == key ||
                                     (ek != null && key.equals(ek)))) {
                                 oldVal = e.val;
+                                // 如果允许修改，就修改节点的值
                                 if (!onlyIfAbsent)
                                     e.val = value;
                                 break;
                             }
                             Node<K,V> pred = e;
+                            // 如果没找到键相同的节点，就插入一个新节点到链表尾部
                             if ((e = e.next) == null) {
                                 pred.next = new Node<K,V>(hash, key,
                                                             value, null);
@@ -255,6 +262,7 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
                             }
                         }
                     }
+                    // 如果是红黑树节点
                     else if (f instanceof TreeBin) {
                         Node<K,V> p;
                         binCount = 2;
@@ -268,6 +276,7 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
                 }
             }
             if (binCount != 0) {
+                // 如果节点个数大于阈值，转换为红黑树
                 if (binCount >= TREEIFY_THRESHOLD)
                     treeifyBin(tab, i);
                 if (oldVal != null)
@@ -276,6 +285,9 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
             }
         }
     }
+    // 添加计数，如果表太小而且尚未调整大小，则启动转移。
+    // 如果已经调整大小，则在工作可用时帮助执行转移。
+    // 在转移后重新检查占用情况，看是否已经需要另一个调整大小，因为限制是增加的。
     addCount(1L, binCount);
     return null;
 }
@@ -290,7 +302,7 @@ public V get(Object key) {
     // 根据键得到哈希值
     int h = spread(key.hashCode());
 
-    // 如果数组不为 null，且长度大于 0，且数组在目标键值对映射到的下标位置处不为 null
+    // 如果桶数组合法且对应下标的桶不是空的
     if ((tab = table) != null && (n = tab.length) > 0 &&
         (e = tabAt(tab, (n - 1) & h)) != null) {
 
