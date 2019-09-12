@@ -227,7 +227,7 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
         else if ((f = tabAt(tab, i = (n - 1) & hash)) == null) {
             if (casTabAt(tab, i, null,
                             new Node<K,V>(hash, key, value, null)))
-                break;                   // no lock when adding to empty bin
+                break;
         }
         // 如果正在执行扩容，则帮助转移这个节点
         else if ((fh = f.hash) == MOVED)

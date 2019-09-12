@@ -5,22 +5,34 @@
 ## Spring 中 Bean 是什么
 
 - Bean 是一类对象。
-- Bean 由 Spring IOC 容器管理。
-- Spring 应用程序由一个个 Bean 组成。
+- 他们是由 Spring IoC 容器管理的。
+- 一个 Spring 应用程序由很多的 Bean 组成。
 
-## Bean的作用域
+## 管理 Bean 的容器
 
-当在 Spring 中定义一个 Bean 时，你必须声明该 Bean 的作用域的选项。例如，为了强制 Spring 在每次需要时都产生一个新的 Bean 实例，你应该声明 Bean 的作用域的属性为 prototype。同理，如果你想让 Spring 在每次需要时都返回同一个 Bean 实例，你应该声明 Bean 的作用域的属性为 singleton。
+### BeanFactory
 
-Spring 框架支持以下五个作用域，如果你使用 web-aware ApplicationContext 时，其中三个是可用的。
+BeanFactory 接口提供了一种能够管理任何类型对象的高级配置机制。
 
-|     作用域      |                                            描述                                             |
-| -------------- | ------------------------------------------------------------------------------------------- |
-| singleton      | 该作用域将 Bean 的定义的限制在每一个 Spring IoC 容器中的一个单一实例（默认）                      |
-| prototype      | 该作用域将单一 Bean 的定义限制在任意数量的对象实例                                              |
-| request        | 该作用域将 Bean 的定义限制为 HTTP 请求。只在 web-aware Spring ApplicationContext 的上下文中有效 |
-| session        | 该作用域将 Bean 的定义限制为 HTTP 会话。只在 web-aware Spring ApplicationContext 的上下文中有效 |
-| global-session | 该作用域将 Bean 的定义限制为 HTTP 会话。只在 web-aware Spring ApplicationContext 的上下文中有效 |
+### ApplicationContext
+
+ApplicationContext 接口表示 Spring IoC 容器，负责实例化，配置和组装 Bean。容器通过读取配置元数据获取有关要实例化，配置和组装的对象的指令。配置元数据以 XML，Java 注释或 Java 代码表示，它允许你表达组成应用程序的对象以及这些对象之间丰富的相互依赖性。
+
+---
+
+BeanFactory 采用了工厂设计模式，负责读取 Bean 配置文档，管理 Bean 的加载，实例化，维护 Bean 之间的依赖关系，负责 Bean 的生命周期。而 ApplicationContext 除了提供上述 BeanFactory 所能提供的功能之外，还提供了更完整的框架功能：国际化支持、AOP、事务等。同时 BeanFactory 在解析配置文件时并不会初始化对象，只有在使用 `getBean()` 方法时才会对该对象进行初始化，而 ApplicationContext 在解析配置文件时对配置文件中的所有对象都初始化了，`getBean()` 方法只是获取对象的过程。
+
+## Bean 的作用域
+
+当在 Spring 中定义一个 Bean 时，你必须声明该 Bean 的作用域的选项。Spring 框架支持以下五个作用域：
+
+|      作用域       |                                            描述                                             |
+| ---------------- | ------------------------------------------------------------------------------------------- |
+| singleton（默认） | 在整个容器中，这个作用域的 Bean 只会生成一个实例                                                |
+| prototype        | 每次通过 getBean 方法获取这个作用域的 Bean 时，都会生成一个新的实例                            |
+| request          | 该作用域将 Bean 的定义限制为 HTTP 请求。只在 Web-Aware Spring ApplicationContext 的上下文中有效 |
+| session          | 该作用域将 Bean 的定义限制为 HTTP 会话。只在 Web-Aware Spring ApplicationContext 的上下文中有效 |
+| global-session   | 该作用域将 Bean 的定义限制为 HTTP 会话。只在 Web-Aware Spring ApplicationContext 的上下文中有效 |
 
 ## Spring 中 Bean 的生命周期
 
