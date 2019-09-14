@@ -202,7 +202,7 @@ static final int spread(int h) {
 }
 ```
 
-#### put（未整理完成）
+#### put
 
 ```java
 public V put(K key, V value) {
