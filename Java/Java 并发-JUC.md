@@ -16,7 +16,9 @@ AQS（Abstract Queued Synchronizer，抽象队列同步器）是构建锁或者�
 
 AQS 是一个抽象类，Sync 类继承自 AQS。
 
-## CountDownLatch
+## 常用类
+
+### CountDownLatch
 
 类似于一个计数器，用于一个线程等待其他若干线程都执行完毕再继续往下执行。
 
@@ -40,7 +42,7 @@ public boolean await(long timeout, TimeUnit unit) throws InterruptedException
 public void countDown()
 ```
 
-## CyclicBarrier
+### CyclicBarrier
 
 字面意思回环栅栏，通过它可以实现让一组线程等待至某个状态之后再全部同时执行。叫做回环是因为当所有等待线程都被释放以后，CyclicBarrier 可以被重用。我们暂且把这个状态就叫做 barrier，当调用 `await()` 方法之后，线程就处于 barrier 了。
 
@@ -63,7 +65,7 @@ public int await() throws InterruptedException, BrokenBarrierException
 public int await(long timeout, TimeUnit unit) throws InterruptedException,BrokenBarrierException,TimeoutException
 ```
 
-## Semaphore
+### Semaphore
 
 信号量，允许有限个线程同时访问。
 
@@ -93,24 +95,8 @@ public void release()
 public void release(int permits)
 ```
 
-## FutureTask
+### FutureTask
 
-## Blocking Queue
+### Blocking Queue
 
-## Fork Join
-
-## ConcurrentHashMap
-
-### ConcurrentHashMap 和 Hashtable 的区别
-
-ConcurrentHashMap 和 Hashtable 的区别主要体现在实现线程安全的方式上不同。
-
-#### 底层数据结构
-
-JDK1.7的 ConcurrentHashMap 底层采用**分段的数组+链表**实现，JDK1.8 采用的数据结构跟HashMap1.8的结构一样，数组+链表/红黑二叉树。Hashtable 和 JDK1.8 之前的 HashMap 的底层数据结构类似都是采用**数组+链表**的形式，数组是 HashMap 的主体，链表则是主要为了解决哈希冲突而存在的。
-
-#### 实现线程安全的方式（重要）
-
-1. **在JDK1.7的时候，ConcurrentHashMap（分段锁）** 对整个桶数组进行了分割分段(Segment)，每一把锁只锁容器其中一部分数据，多线程访问容器里不同数据段的数据，就不会存在锁竞争，提高并发访问率。 **到了 JDK1.8 的时候已经摒弃了Segment的概念，而是直接用 Node 数组+链表+红黑树的数据结构来实现，并发控制使用 synchronized 和 CAS 来操作。（JDK1.6以后 对 synchronized锁做了很多优化）** 整个看起来就像是优化过且线程安全的 HashMap，虽然在JDK1.8中还能看到 Segment 的数据结构，但是已经简化了属性，只是为了兼容旧版本。
-2. **Hashtable(同一把锁)** 使用 synchronized 来保证线程安全，效率非常低下。当一个线程访问同步方法时，其他线程也访问同步方法，可能会进入阻塞或轮询状态，如使用 put 添加元素，另一个线程不能使用 put 添加元素，也不能使用 get，竞争会越来越激烈效率越低。
-
+### Fork Join
