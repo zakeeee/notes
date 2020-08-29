@@ -13,7 +13,7 @@ Spring AOP 的实现是基于动态代理的，有两种方式：
 - 如果要代理的对象，实现了某个接口，那么 Spring AOP 会使用 JDK 中的 Proxy，去创建代理对象。Proxy 在 JDK 的反射包中。
 - 对于没有实现接口的对象，就无法使用 JDK Proxy 去进行代理了，这时候 Spring AOP 会使用 CGLib（Code Generation Library）生成一个被代理对象的子类来作为代理。
 
-![Image(12)](images/20190723215722974_32448.png)
+![Image(12)](assets/20190723215722974_32448.png)
 
 ## AOP 术语
 
