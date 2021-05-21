@@ -1,8 +1,8 @@
-# 浏览器中输入URL后发生了什么
+# 浏览器中输入 URL 后发生了什么
 
 [TOC]
 
-## 在浏览器中输入URL到显示的过程
+## 在浏览器中输入 URL 到显示的过程
 
 ![](assets/20190723220402012_24054.png)
 
@@ -18,6 +18,6 @@
 
 ## 参考文章
 
-[前端经典面试题: 从输入URL到页面加载发生了什么？](https://segmentfault.com/a/1190000006879700)
+[前端经典面试题: 从输入 URL 到页面加载发生了什么？](https://segmentfault.com/a/1190000006879700)
 
 [在浏览器输入 URL 回车之后发生了什么？（超详细版）](https://mp.weixin.qq.com/s?__biz=MzAxNjk4ODE4OQ==&mid=2247486652&idx=1&sn=098387ac80727dfa9422f39e7bb6d6b6&chksm=9bed2dceac9aa4d8998e90aa6598596a5095483482c3986ab7f05a2b63989b3fe8ea1552890a&mpshare=1&scene=1&srcid=&sharer_sharetime=1568449408082&sharer_shareid=6fa69df0bf20aef3fd0f4b65f54b3610#rd)

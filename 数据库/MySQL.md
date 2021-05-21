@@ -13,4 +13,4 @@
 
 ## 参考文章
 
-[MySQL 面试高频100问](https://zhuanlan.zhihu.com/p/76873520)
+[MySQL 面试高频 100 问](https://zhuanlan.zhihu.com/p/76873520)
