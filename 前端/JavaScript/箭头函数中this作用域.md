@@ -1,6 +1,6 @@
 # 箭头函数中 this 作用域
 
-## JavaScript 中作用域
+## JavaScript 中作用域类型
 
 1. 全局作用域
 2. 函数作用域
