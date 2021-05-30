@@ -1,7 +1,5 @@
 # Java 并发-JUC
 
-[TOC]
-
 ## 原子类
 
 JUC 包中的原子类都是使用 CAS 实现的，一个 CAS 操作的定义类似于 `compareAndSwap(obj, offset, expected, update)`，其中 expected 是对要修改的变量当前值的期望值，如果变量的值不是这个值，CAS 操作会失败，update 是要把变量修改修改成的值。

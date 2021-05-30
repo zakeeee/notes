@@ -1,7 +1,5 @@
 # RTP
 
-[TOC]
-
 ## 实时传输协议 RTP
 
 [RTP](https://zh.wikipedia.org/wiki/实时传输协议)

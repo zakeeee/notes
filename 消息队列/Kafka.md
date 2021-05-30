@@ -1,7 +1,5 @@
 # Kafka
 
-[TOC]
-
 ## Kafka 能做啥
 
 - 消息系统

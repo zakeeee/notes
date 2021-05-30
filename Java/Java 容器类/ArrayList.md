@@ -1,7 +1,5 @@
 # ArrayList
 
-[TOC]
-
 ArrayList 是一个基于可变长数组的 List 实现类。
 
 默认初始容量是 10。

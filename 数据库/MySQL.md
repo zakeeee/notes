@@ -1,7 +1,5 @@
 # MySQL
 
-[TOC]
-
 ## InnoDB 和 MyISAM 区别
 
 1. InnoDB 支持事务，MyISAM 不支持。对于 InnoDB 每一条 SQL 语句都默认封装成事务，自动提交，这样会影响速度，所以最好把多条 SQL 语句放在 begin 和 commit 之间，组成一个事务。

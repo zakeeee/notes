@@ -1,7 +1,5 @@
 # HTTPS
 
-[TOC]
-
 ## 为什么需要 HTTPS
 
 HTTP 有以下安全性问题：

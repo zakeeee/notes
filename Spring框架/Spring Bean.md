@@ -1,7 +1,5 @@
 # Spring Bean
 
-[TOC]
-
 ## Spring 中 Bean 是什么
 
 - Bean 是一类对象。

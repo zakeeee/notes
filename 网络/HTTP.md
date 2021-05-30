@@ -1,7 +1,5 @@
 # HTTP
 
-[TOC]
-
 ## URI
 
 URI 包含 URL 和 URN。

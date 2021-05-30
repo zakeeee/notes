@@ -1,7 +1,5 @@
 # HashMap
 
-[TOC]
-
 HashMap 是基于哈希的 Map 实现类。由于是基于哈希的，容器中元素是无序的。
 
 ## HashMap 扩容
