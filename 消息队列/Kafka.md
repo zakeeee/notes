@@ -38,7 +38,7 @@ Kafka 采用 pull 模式来消费消息，这样的好处是消费者可以根�
 
 **Kafka 由消费者自己来控制 offset**，消费者可以在本地保存最后消费的 offset，并定期向 zookeeper 注册 offset。
 
-在 Kafka 0.9 版本之后，Kafka 为了降低 ZooKeeper 的 IO 读写，减少 network data transfer，也自己实现了在 Kafka Server 上存储Consumer，Topic，Partitions，Offset 信息，将消费的 Offset 迁入到了 Kafka 一个名为 `__consumer_offsets` 的 Topic 中。
+在 Kafka 0.9 版本之后，Kafka 为了降低 ZooKeeper 的 IO 读写，减少 network data transfer，也自己实现了在 Kafka Server 上存储 Consumer，Topic，Partitions，Offset 信息，将消费的 Offset 迁入到了 Kafka 一个名为 `__consumer_offsets` 的 Topic 中。
 
 ## 底层存储
 
@@ -62,17 +62,17 @@ log 文件定义了严格的存储格式，以便快速查询消息。
 
 每条消息的内容由以下部分组成：
 
-|         关键字         |                                   解释                                    |
-| :-------------------: | :-----------------------------------------------------------------------: |
+|        关键字         |                                     解释                                      |
+| :-------------------: | :---------------------------------------------------------------------------: |
 |     8 byte offset     | 这是该条消息在 partition 中的绝对 offset。能表示这是 partition 的第多少条消息 |
-|    4 byte message     |                               message 大小                                |
-|     4 byte CRC32      |                           用 CRC32 校验 message                           |
-|    1 byte "magic"     |                    表示本次发布 Kafka 服务程序协议版本号                    |
-|  1 byte "attributes"  |                  表示为独立版本、或标识压缩类型、或编码类型                  |
-|   4 byte key length   |            表示 key 的长度，当 key 为 -1 时，K byte key 字段不填            |
-|      K byte key       |                                   可选                                    |
-| 4 byte payload length |                              实际消息数据长度                              |
-|  value bytes payload  |                                实际消息数据                                |
+|    4 byte message     |                                 message 大小                                  |
+|     4 byte CRC32      |                             用 CRC32 校验 message                             |
+|    1 byte "magic"     |                     表示本次发布 Kafka 服务程序协议版本号                     |
+|  1 byte "attributes"  |                  表示为独立版本、或标识压缩类型、或编码类型                   |
+|   4 byte key length   |             表示 key 的长度，当 key 为 -1 时，K byte key 字段不填             |
+|      K byte key       |                                     可选                                      |
+| 4 byte payload length |                               实际消息数据长度                                |
+|  value bytes payload  |                                 实际消息数据                                  |
 
 ### 5. index 文件的存储方式
 
@@ -91,7 +91,7 @@ Message1006
 Message2234
 ```
 
-那么index文件里的内容可能是这样的：
+那么 index 文件里的内容可能是这样的：
 
 ```
 1,0  // 代表 segment 的第一条消息，也就是 Message1001，在 segment 最开头的位置
@@ -102,9 +102,9 @@ Message2234
 1230,8765  // 代表 segment 的第 1230 条消息，也就是 Message2230，从第 8765 个偏移量开始
 ```
 
-每行的第一个数代表某条消息在此 segment 的相对 offset，第二个数代表这条消息在 log 文件中的文件指针偏移量（单位还没搞明白，好像是byte）。
+每行的第一个数代表某条消息在此 segment 的相对 offset，第二个数代表这条消息在 log 文件中的文件指针偏移量（单位还没搞明白，好像是 byte）。
 
-可以看到，index文件没有记录每一条消息的偏移量，而是采用**稀疏索引**的方式，隔几条记录一次，这样使得索引文件的变的比较小，但是在查询时要付出一点的性能损失。
+可以看到，index 文件没有记录每一条消息的偏移量，而是采用**稀疏索引**的方式，隔几条记录一次，这样使得索引文件的变的比较小，但是在查询时要付出一点的性能损失。
 
 只要消费者从 index 文件定位了消息的位置，就能快速的从 log 文件里找到这条消息。
 
@@ -114,10 +114,6 @@ segment 分段有两种方式，按大小和按文件生成时间。
 
 - 按大小：server.properties 中的 `log.segment.bytes` 定义了每段的 log 文件的大小上限，如果超出该上限则后面的消息会创建新文件来存储。该配置项默认值是 `1014*1024*1024`。该配置可以在创建 topic 时额外指定，不使用配置文件的配置项。
 - 按生成时间：server.properties 中的 `log.roll.hours` 定义了按创建时间分组的方式。如果一个 log 文件创建时间达到了该配置中的小时数，即使文件大小没有达到 `log.segment.bytes`，后面的消息也会创建新文件。该配置可以在创建 topic 时额外指定，不使用配置文件的配置项。
-
-## Kafka 如何做到每秒发布百万条消息
-
-[Kafka 如何做到每秒发布百万条消息](https://blog.csdn.net/antony9118/article/details/71699651)
 
 ## 消息传输担保机制
 
@@ -174,3 +170,7 @@ Kafka 将每个分片数据复制到多个服务器上，任何一个分片有�
 ### Consumer
 
 1. 关闭自动提交 offset，让消费者消费完手动提交 offset。
+
+## 相关阅读
+
+[Kafka 如何做到每秒发布百万条消息](https://blog.csdn.net/antony9118/article/details/71699651)

@@ -9,6 +9,6 @@
 5. InnoDB 同时支持行级锁和表级锁，而 MyISAM 只支持表级锁，不支持行级锁。
 6. ~~InnoDB 不支持全文索引，而 MyISAM 支持全文索引，查询效率上 MyISAM 要高。~~（5.6.4 以后版本开始支持 InnoDB 引擎的 FULLTEXT 类型的索引）
 
-## 参考文章
+## 相关阅读
 
 [MySQL 面试高频 100 问](https://zhuanlan.zhihu.com/p/76873520)

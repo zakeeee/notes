@@ -24,8 +24,6 @@
 - 以时间复杂度 O(n) 的 select 作为保底。
 - 基于 react 设计模式监听 IO 事件。
 
-[搞懂Redis到底快在哪里](https://mp.weixin.qq.com/s?__biz=MjM5NTY1MjY0MQ==&mid=2650745383&idx=3&sn=c7546a9ad8d23a51505f332d428fec34&chksm=befebf698989367ffff100dcde67785d1fbeceff4c814fba2a93443c967d39775b58cd78c92f&mpshare=1&scene=1&srcid=#rd)
-
 ## Redis 支持的数据类型
 
 > 除了下面 5 种常用数据类型外，Redis 还支持用于计数的 HyperLogLog，用于存储地理位置信息的 Geo 等。
@@ -67,17 +65,13 @@ Hash 是由多个 fields 和 values 组成的映射表，其中 field 和 value 
 
 ## Redis 底层数据类型基础
 
-1. **简单动态字符串 SDS（Simple Dynamic String）**：Redis 没有直接使用C语言传统的字符串表示，而是自己构建了一种名为简单动态字符串（simple dynamic string SDS）的抽象类型，并将SDS用作Redis 的默认字符串表示。
-2. **链表 Linked List**：双向链表。
-3. **字典 Dict**
-4. **跳表 Skip List**：Redis 只在两个地方用到了跳跃表，一个是实现**有序集合键**，另外一个是在**集群节点中用作内部数据结构**。
-5. **整数集合 Int Set**：整数集合是**集合键**的底层实现之一，当一个集合中只包含整数，且这个集合中的元素数量不多时，redis就会使用整数集合 Int Set 作为集合的底层实现。
-6. **压缩列表 Zip List**：压缩列表是列表键和哈希键的底层实现之一。当一个列表键只含有少量列表项，并且每个列表项要么就是小整数，要么就是长度比较短的字符串，那么Redis 就会使用压缩列表来做列表键的底层实现。
-7. **对象**
-
-[深入浅出Redis-redis底层数据结构（上）](https://www.cnblogs.com/jaycekon/p/6227442.html)
-
-[深入浅出Redis-redis底层数据结构（下）](https://www.cnblogs.com/jaycekon/p/6277653.html)
+1. 简单动态字符串 SDS（Simple Dynamic String）：Redis 没有直接使用 C 语言传统的字符串表示，而是自己构建了一种名为简单动态字符串（simple dynamic string SDS）的抽象类型，并将 SDS 用作 Redis 的默认字符串表示。
+2. 链表 Linked List：双向链表。
+3. 字典 Dict
+4. 跳表 Skip List：Redis 只在两个地方用到了跳跃表，一个是实现**有序集合键**，另外一个是在**集群节点中用作内部数据结构**。
+5. 整数集合 Int Set：整数集合是**集合键**的底层实现之一，当一个集合中只包含整数，且这个集合中的元素数量不多时，redis 就会使用整数集合 Int Set 作为集合的底层实现。
+6. 压缩列表 Zip List：压缩列表是列表键和哈希键的底层实现之一。当一个列表键只含有少量列表项，并且每个列表项要么就是小整数，要么就是长度比较短的字符串，那么 Redis 就会使用压缩列表来做列表键的底层实现。
+7. 对象
 
 **SDS 对比 C 语言字符串有什么优点？**
 
@@ -103,7 +97,7 @@ struct sdshdr {
 
 ## Redis 内存管理
 
-[Redis内存管理.md](Redis内存管理.md)
+[Redis 内存管理.md](Redis内存管理.md)
 
 ## Redis 管道
 
@@ -141,7 +135,7 @@ Redis 提供了批量执行命令的方法，即使用管道（Pipeline）。
 哨兵的存在是为了解决主从同步 leader 宕机后的主从切换问题。其具有如下功能：
 
 - **监控**：检查主从服务器是否运行正常。
-- **提醒**：通过API向管理员或其他应用程序发送故障通知。
+- **提醒**：通过 API 向管理员或其他应用程序发送故障通知。
 - **自动故障迁移**：主从切换。
 
 ## Redis 集群
@@ -149,3 +143,11 @@ Redis 提供了批量执行命令的方法，即使用管道（Pipeline）。
 为了从海量数据里快速找到所需数据，可以将数据分片存储在多个结点上，通常使用计算哈希值然后取模来决定数据应该映射到哪个结点上。
 
 如果只是对结点数量取模，那么一旦结点数量改变，数据映射就会出错。为了解决这个问题，引入了[一致性哈希算法](../数据结构与算法/一致性哈希算法.md)。
+
+## 相关阅读
+
+[Redis 到底快在哪里](https://mp.weixin.qq.com/s?__biz=MjM5NTY1MjY0MQ==&mid=2650745383&idx=3&sn=c7546a9ad8d23a51505f332d428fec34&chksm=befebf698989367ffff100dcde67785d1fbeceff4c814fba2a93443c967d39775b58cd78c92f&mpshare=1&scene=1&srcid=#rd)
+
+[深入浅出 Redis-redis 底层数据结构（上）](https://www.cnblogs.com/jaycekon/p/6227442.html)
+
+[深入浅出 Redis-redis 底层数据结构（下）](https://www.cnblogs.com/jaycekon/p/6277653.html)

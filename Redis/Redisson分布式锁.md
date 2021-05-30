@@ -1,4 +1,4 @@
-# Redisson分布式锁
+# Redisson 分布式锁
 
 ## 加锁过程
 
@@ -111,4 +111,6 @@ protected RFuture<Boolean> renewExpirationAsync(long threadId) {
 }
 ```
 
-[聊聊redisson的分布式锁](https://juejin.im/post/5ba4b2cc5188255c672eacf2)
+## 相关阅读
+
+[聊聊 redisson 的分布式锁](https://juejin.im/post/5ba4b2cc5188255c672eacf2)
