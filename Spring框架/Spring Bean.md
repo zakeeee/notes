@@ -24,13 +24,13 @@ BeanFactory 采用了工厂设计模式，负责读取 Bean 配置文档，管�
 
 当在 Spring 中定义一个 Bean 时，你必须声明该 Bean 的作用域的选项。Spring 框架支持以下五个作用域：
 
-|      作用域       |                                            描述                                             |
-| ---------------- | ------------------------------------------------------------------------------------------- |
+| 作用域            | 描述                                                                                            |
+| ----------------- | ----------------------------------------------------------------------------------------------- |
 | singleton（默认） | 在整个容器中，这个作用域的 Bean 只会生成一个实例                                                |
-| prototype        | 每次通过 getBean 方法获取这个作用域的 Bean 时，都会生成一个新的实例                            |
-| request          | 该作用域将 Bean 的定义限制为 HTTP 请求。只在 Web-Aware Spring ApplicationContext 的上下文中有效 |
-| session          | 该作用域将 Bean 的定义限制为 HTTP 会话。只在 Web-Aware Spring ApplicationContext 的上下文中有效 |
-| global-session   | 该作用域将 Bean 的定义限制为 HTTP 会话。只在 Web-Aware Spring ApplicationContext 的上下文中有效 |
+| prototype         | 每次通过 getBean 方法获取这个作用域的 Bean 时，都会生成一个新的实例                             |
+| request           | 该作用域将 Bean 的定义限制为 HTTP 请求。只在 Web-Aware Spring ApplicationContext 的上下文中有效 |
+| session           | 该作用域将 Bean 的定义限制为 HTTP 会话。只在 Web-Aware Spring ApplicationContext 的上下文中有效 |
+| global-session    | 该作用域将 Bean 的定义限制为 HTTP 会话。只在 Web-Aware Spring ApplicationContext 的上下文中有效 |
 
 ## Spring 中 Bean 的生命周期
 
@@ -47,4 +47,6 @@ BeanFactory 采用了工厂设计模式，负责读取 Bean 配置文档，管�
 9. 经过以上的工作后，Bean 将一直驻留在应用上下文中给应用使用，直到应用上下文被销毁。
 10. 如果 Bean 实现了 DisposableBean 接口，Spring 将调用它的 destroy 方法，作用与在配置文件中对 Bean 使用 destroy-method 属性的作用一样，都是在 Bean 实例销毁前执行的方法。
 
-[参考](https://www.zhihu.com/question/38597960/answer/77600561)
+## 相关阅读
+
+[Spring 中 Bean 的生命周期是怎样的？](https://www.zhihu.com/question/38597960/answer/77600561)
